@@ -40,6 +40,19 @@ const ChartColors = {
   }
 };
 
+// Safe Plotly renderer that never crashes if CDN is delayed or blocked
+function safePlotly(el, data, layout, config) {
+  if (typeof window !== 'undefined' && window.Plotly && typeof window.Plotly.newPlot === 'function') {
+    try {
+      window.Plotly.newPlot(el, data, layout, config || { responsive: true, displayModeBar: false });
+    } catch (err) {
+      console.warn('safePlotly suppressed error:', err);
+    }
+  } else {
+    console.warn('Plotly not ready, skipped chart render for:', el);
+  }
+}
+
 // -----------------------------------------------------------------------------
 // Initialization & Data Loading
 // -----------------------------------------------------------------------------
@@ -172,20 +185,24 @@ function hideError() {
 // -----------------------------------------------------------------------------
 
 function renderAllViews() {
-  renderKPIs();
-  renderAccountingTable();
-  renderOverviewCharts();
-  renderCrossSourceTable();
-  renderCrossSourceCharts();
-  renderProblemExplorer();
-  renderEvidenceTable();
-  renderInsights();
-  renderOpportunities();
-  renderDiscoveryChain();
-  renderAssignmentQuestions();
+  try { renderKPIs(); } catch (e) { console.error('Error rendering KPIs:', e); }
+  try { renderAccountingTable(); } catch (e) { console.error('Error rendering accounting table:', e); }
+  try { renderOverviewCharts(); } catch (e) { console.error('Error rendering overview charts:', e); }
+  try { renderCrossSourceTable(); } catch (e) { console.error('Error rendering cross-source table:', e); }
+  try { renderCrossSourceCharts(); } catch (e) { console.error('Error rendering cross-source charts:', e); }
+  try { renderProblemExplorer(); } catch (e) { console.error('Error rendering problem explorer:', e); }
+  try { renderEvidenceTable(); } catch (e) { console.error('Error rendering evidence table:', e); }
+  try { renderInsights(); } catch (e) { console.error('Error rendering insights:', e); }
+  try { renderOpportunities(); } catch (e) { console.error('Error rendering opportunities:', e); }
+  try { renderDiscoveryChain(); } catch (e) { console.error('Error rendering discovery chain:', e); }
+  try { renderAssignmentQuestions(); } catch (e) { console.error('Error rendering assignment questions:', e); }
 
-  if (window.lucide) {
-    window.lucide.createIcons();
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    try {
+      window.lucide.createIcons();
+    } catch (e) {
+      console.warn('lucide icon error:', e);
+    }
   }
 }
 
@@ -272,7 +289,7 @@ function renderOverviewCharts() {
       plot_bgcolor: 'transparent',
       font: { family: 'inherit', size: 11 }
     };
-    Plotly.newPlot(funnelEl, funnelData, layout, { responsive: true, displayModeBar: false });
+    safePlotly(funnelEl, funnelData, layout, { responsive: true, displayModeBar: false });
   }
 
   // Source Distribution Donut
@@ -303,7 +320,7 @@ function renderOverviewCharts() {
       paper_bgcolor: 'transparent',
       font: { family: 'inherit', size: 11 }
     };
-    Plotly.newPlot(pieEl, pieData, layout, { responsive: true, displayModeBar: false });
+    safePlotly(pieEl, pieData, layout, { responsive: true, displayModeBar: false });
   }
 }
 
@@ -363,7 +380,7 @@ function renderCrossSourceCharts() {
       yaxis: { title: 'Share (%)', range: [0, 100] },
       font: { family: 'inherit', size: 10 }
     };
-    Plotly.newPlot(crossThemesEl, traces, layout, { responsive: true, displayModeBar: false });
+    safePlotly(crossThemesEl, traces, layout, { responsive: true, displayModeBar: false });
   }
 
   // Cross Source Sentiment Grouped Bar
@@ -389,7 +406,7 @@ function renderCrossSourceCharts() {
       yaxis: { title: 'Proportion (%)', range: [0, 100] },
       font: { family: 'inherit', size: 10 }
     };
-    Plotly.newPlot(crossSentEl, traces, layout, { responsive: true, displayModeBar: false });
+    safePlotly(crossSentEl, traces, layout, { responsive: true, displayModeBar: false });
   }
 }
 
@@ -442,7 +459,7 @@ function renderProblemExplorer() {
       xaxis: { title: 'Record Count' },
       font: { family: 'inherit', size: 10 }
     };
-    Plotly.newPlot(themesChartEl, [trace], layout, { responsive: true, displayModeBar: false });
+    safePlotly(themesChartEl, [trace], layout, { responsive: true, displayModeBar: false });
   }
 
   // Stage vs Theme Heatmap
@@ -471,7 +488,7 @@ function renderProblemExplorer() {
       xaxis: { tickangle: -25 },
       font: { family: 'inherit', size: 9 }
     };
-    Plotly.newPlot(stageThemeEl, heatmapData, layout, { responsive: true, displayModeBar: false });
+    safePlotly(stageThemeEl, heatmapData, layout, { responsive: true, displayModeBar: false });
   }
 
   // Distribution Lists
@@ -935,7 +952,7 @@ function renderOpportunities() {
       showlegend: false,
       font: { family: 'inherit', size: 10 }
     };
-    Plotly.newPlot(oppChartEl, traces, layout, { responsive: true, displayModeBar: false });
+    safePlotly(oppChartEl, traces, layout, { responsive: true, displayModeBar: false });
   }
 
   // Render Action Cards

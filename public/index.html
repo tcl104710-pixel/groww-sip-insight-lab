@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groww SIP Insight Lab — AI Discovery Engine</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            groww: {
+              green: '#00d09c',
+              dark: '#121212',
+              gray: '#7c7e8c',
+              light: '#f8fafc',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom scrollbars and transitions */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    .tab-btn.active {
+      border-bottom: 2px solid #2563eb;
+      color: #1e40af;
+      font-weight: 700;
+    }
+    .badge-p0 { background-color: #fee2e2; color: #991b1b; }
+    .badge-p1 { background-color: #fef3c7; color: #92400e; }
+    .badge-p2 { background-color: #dbeafe; color: #1e40af; }
+    .badge-pos { background-color: #dcfce7; color: #166534; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Top Navbar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-brand-900 flex items-center justify-center text-white font-bold text-xl shadow-sm">
+          📈
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-slate-900 leading-tight">Groww SIP Insight Lab</h1>
+          <p class="text-xs text-slate-500">AI Discovery Engine · Multi-Source Research Platform</p>
+        </div>
+      </div>
+      
+      <!-- Right Status Badges -->
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="headerClassifiedBadge">1,029 AI Classified</span>
+        </span>
+        <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+          <span id="headerRawBadge">4,983 Raw Analyzed</span>
+        </span>
+        <button onclick="switchTab('canvasGallery')" class="px-2.5 py-1 text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 rounded-lg transition flex items-center gap-1.5" title="View 6 High-Res Discovery Canvases">
+          <i data-lucide="image" class="w-3.5 h-3.5 text-indigo-600"></i>
+          <span>6 HD Canvases</span>
+        </button>
+        <button id="refreshBtn" onclick="refreshCorpus()" class="p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Refresh Live Data">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col gap-6">
+
+    <!-- Top KPI Grid -->
+    <div id="kpiGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <!-- Skeletons loaded initially -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm animate-pulse h-20"></div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm animate-pulse h-20"></div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm animate-pulse h-20"></div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm animate-pulse h-20"></div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm animate-pulse h-20"></div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm animate-pulse h-20"></div>
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+      <!-- Search Input -->
+      <div class="relative flex-1">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+        <input 
+          id="globalSearchInput" 
+          type="text" 
+          placeholder="Search feedback, quotes, reasons, record IDs (e.g. bounce, pause, index)..." 
+          class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+          oninput="debounceSearch()"
+        />
+      </div>
+
+      <!-- Quick Dropdowns -->
+      <div class="flex flex-wrap gap-2 items-center">
+        <!-- Source Filter -->
+        <select id="sourceSelect" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500">
+          <option value="">All Sources</option>
+          <option value="play_store">Google Play Store</option>
+          <option value="app_store">Apple App Store</option>
+          <option value="reddit">Reddit</option>
+          <option value="youtube">YouTube</option>
+        </select>
+
+        <!-- Theme Filter -->
+        <select id="themeSelect" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500 max-w-[180px]">
+          <option value="">All Problem Themes</option>
+          <option value="Mandate / Auto-Debit Failure">Mandate & Auto-Debit Failure</option>
+          <option value="Market Volatility Panic & Loss">Volatility & Loss Panic</option>
+          <option value="Fund Rebalancing & Strategy Shift">Fund Rebalancing & Switch</option>
+          <option value="Cash Crunch & Affordability">Cash Crunch & Affordability</option>
+          <option value="Platform Delay & Allocation Error">NAV Delay & Allocation Error</option>
+          <option value="Customer Support Gap">Customer Support Gap</option>
+          <option value="Positive / Satisfied Experience">Positive / Compounding</option>
+        </select>
+
+        <!-- Sentiment Filter -->
+        <select id="sentimentSelect" onchange="applyFilters()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500">
+          <option value="">All Sentiments</option>
+          <option value="positive">Positive</option>
+          <option value="neutral">Neutral</option>
+          <option value="negative">Negative</option>
+        </select>
+
+        <!-- Reset Button -->
+        <button onclick="resetFilters()" class="px-3 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-1">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset
+        </button>
+      </div>
+
+      <!-- Active Counter Badge -->
+      <div id="filterCountBadge" class="text-xs font-bold text-slate-500 whitespace-nowrap self-center">
+        Showing: 269 / 269 records
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-b border-slate-200">
+      <nav class="flex gap-2 sm:gap-6 overflow-x-auto no-scrollbar" aria-label="Tabs">
+        <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active py-3 px-1 text-sm font-medium text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="bar-chart-2" class="w-4 h-4"></i> 1. Research Overview
+        </button>
+        <button onclick="switchTab('crossSource')" id="tab-crossSource" class="tab-btn py-3 px-1 text-sm font-medium text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="globe" class="w-4 h-4"></i> 2. Cross-Source Analysis
+        </button>
+        <button onclick="switchTab('problemExplorer')" id="tab-problemExplorer" class="tab-btn py-3 px-1 text-sm font-medium text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="puzzle" class="w-4 h-4"></i> 3. Problem Explorer
+        </button>
+        <button onclick="switchTab('evidenceExplorer')" id="tab-evidenceExplorer" class="tab-btn py-3 px-1 text-sm font-medium text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="search-check" class="w-4 h-4"></i> 4. Evidence Explorer
+        </button>
+        <button onclick="switchTab('insightExplorer')" id="tab-insightExplorer" class="tab-btn py-3 px-1 text-sm font-medium text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="lightbulb" class="w-4 h-4"></i> 5. Insight Explorer
+        </button>
+        <button onclick="switchTab('opportunityMatrix')" id="tab-opportunityMatrix" class="tab-btn py-3 px-1 text-sm font-medium text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="target" class="w-4 h-4"></i> 6. Opportunity Matrix
+        </button>
+        <button onclick="switchTab('aiAssistant')" id="tab-aiAssistant" class="tab-btn py-3 px-1 text-sm font-medium text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="bot" class="w-4 h-4"></i> 7. AI Research Assistant
+        </button>
+        <button onclick="switchTab('discoveryChain')" id="tab-discoveryChain" class="tab-btn py-3 px-1 text-sm font-medium text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="git-merge" class="w-4 h-4 text-brand-600"></i> 8. Discovery Chain & Questions
+        </button>
+        <button onclick="switchTab('canvasGallery')" id="tab-canvasGallery" class="tab-btn py-3 px-2 text-sm font-bold text-indigo-700 hover:text-indigo-900 transition flex items-center gap-1.5 whitespace-nowrap bg-indigo-50/80 rounded-t-lg border-b-2 border-transparent">
+          <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i> 9. Research Canvases (HD)
+        </button>
+      </nav>
+    </div>
+
+    <!-- Loading State Container -->
+    <div id="loadingState" class="hidden flex-col items-center justify-center py-20 gap-3 text-slate-400">
+      <div class="w-10 h-10 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div>
+      <p class="text-sm font-medium text-slate-600">Loading empirical research dataset...</p>
+    </div>
+
+    <!-- Error State Container -->
+    <div id="errorState" class="hidden bg-red-50 border border-red-200 text-red-700 p-6 rounded-xl flex items-start gap-4">
+      <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600 shrink-0 mt-0.5"></i>
+      <div class="flex-1">
+        <h4 class="font-bold text-base mb-1">Failed to load research data</h4>
+        <p id="errorMessage" class="text-sm text-red-600 mb-3">Unable to connect to the backend API or load local datasets.</p>
+        <button onclick="refreshCorpus()" class="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 transition">Retry Connection</button>
+      </div>
+    </div>
+
+    <!-- Empty State Container -->
+    <div id="emptyState" class="hidden flex-col items-center justify-center py-16 gap-3 text-center">
+      <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
+        <i data-lucide="filter-x" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-base font-bold text-slate-800">No records match your active filters</h3>
+      <p class="text-sm text-slate-500 max-w-md">Try clearing or adjusting your search term, source channel, or problem theme filters to see results.</p>
+      <button onclick="resetFilters()" class="mt-2 px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-lg hover:bg-brand-700 transition">Reset All Filters</button>
+    </div>
+
+    <!-- TAB CONTENTS -->
+
+    <!-- TAB 1: RESEARCH OVERVIEW -->
+    <div id="tabContent-overview" class="tab-pane flex flex-col gap-6">
+      <!-- Canvas 1 Blueprint Showcase Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-indigo-900/50 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Executive Blueprint · Canvas 1
+            </span>
+            <span class="text-xs text-indigo-300 font-medium">9 Core Research Questions</span>
+          </div>
+          <h3 class="text-lg font-black tracking-tight text-white mb-1">
+            "First-time SIP investors don't quit in panic. They quit in confusion."
+          </h3>
+          <p class="text-xs text-indigo-200/80 mb-3 max-w-2xl leading-relaxed">
+            Multi-source empirical data: 127 records ask how to cancel or stop; only 13 show market-loss anxiety. Autopay mechanics and NAV transparency dominate investor drop-offs over market panic.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openImageModal('/grow/1_overview.png', 'Canvas 1: Executive Research Overview', 'Headline: First-time investors quit in confusion, not panic. 9 core questions evaluated.')" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Enlarge Full Canvas (HD)
+            </button>
+            <button onclick="switchTab('canvasGallery')" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i> Browse All 6 Canvases
+            </button>
+          </div>
+        </div>
+        <div class="relative group cursor-pointer w-full md:w-80 shrink-0 rounded-xl overflow-hidden border-2 border-indigo-500/30 shadow-xl bg-slate-900" onclick="openImageModal('/grow/1_overview.png', 'Canvas 1: Executive Research Overview', 'Headline: First-time investors quit in confusion, not panic.')">
+          <img src="/grow/1_overview.png" alt="Canvas 1: Overview Blueprint" class="w-full h-36 object-cover object-top group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i> Click to Zoom HD
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+            <i data-lucide="git-merge" class="w-4 h-4 text-brand-600"></i> Multi-Source Pipeline Ingestion Funnel
+          </h3>
+          <p class="text-xs text-slate-500 mb-4">Tracking feedback progression from raw platform queries down to verified AI-classified records.</p>
+          <div id="chart-funnel" class="h-72 w-full"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-brand-600"></i> SIP-Relevant Corpus by Source Channel
+          </h3>
+          <p class="text-xs text-slate-500 mb-4">Proportion of relevant SIP feedback items contributed by each public platform.</p>
+          <div id="chart-source-pie" class="h-72 w-full"></div>
+        </div>
+      </div>
+
+      <!-- Ingestion Accounting Table -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <i data-lucide="clipboard-list" class="w-4 h-4 text-brand-600"></i> Research Pipeline Accounting & Integrity Audit
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
+                <th class="py-3 px-4">Stage</th>
+                <th class="py-3 px-4">Record Count</th>
+                <th class="py-3 px-4">Share (%)</th>
+                <th class="py-3 px-4">Audit Description</th>
+              </tr>
+            </thead>
+            <tbody id="accountingTableBody" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: CROSS-SOURCE ANALYSIS -->
+    <div id="tabContent-crossSource" class="tab-pane hidden flex flex-col gap-6">
+      <!-- Canvas 2 Blueprint Showcase Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-blue-900/50 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
+              Investor Dynamics · Canvas 2
+            </span>
+            <span class="text-xs text-blue-300 font-medium">Cross-Source Persona & Journeys</span>
+          </div>
+          <h3 class="text-lg font-black tracking-tight text-white mb-1">
+            Investor Behaviour: Why Investors Start, Watch, and React
+          </h3>
+          <p class="text-xs text-blue-200/80 mb-3 max-w-2xl leading-relaxed">
+            Detailed breakdown across 5 lifecycle stages, external communities (249 ask on YouTube/Reddit), and checking frequency (29 daily portfolio checks vs. 10 on market moves).
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openImageModal('/grow/2_investor_behaviour.png', 'Canvas 2: Investor Behaviour & Dynamics', 'Stages 1-5, motives (goals/wealth), checking habits, and segment comparisons.')" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Enlarge Canvas 2 (HD)
+            </button>
+            <button onclick="switchTab('canvasGallery')" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i> View Gallery
+            </button>
+          </div>
+        </div>
+        <div class="relative group cursor-pointer w-full md:w-80 shrink-0 rounded-xl overflow-hidden border-2 border-blue-500/30 shadow-xl bg-slate-900" onclick="openImageModal('/grow/2_investor_behaviour.png', 'Canvas 2: Investor Behaviour & Dynamics', 'Stages 1-5, motives, checking habits, and segment comparisons.')">
+          <img src="/grow/2_investor_behaviour.png" alt="Canvas 2: Investor Behaviour Blueprint" class="w-full h-36 object-cover object-top group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i> Click to Zoom HD
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
+          <i data-lucide="layers" class="w-4 h-4 text-brand-600"></i> Channel Trait & Sentiment Summary
+        </h3>
+        <p class="text-xs text-slate-500 mb-4">Comparison of investor cohorts, dominant themes, and sentiment polarity across all 4 channels.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
+                <th class="py-3 px-4">Channel</th>
+                <th class="py-3 px-4">Relevant Count</th>
+                <th class="py-3 px-4">Corpus Share</th>
+                <th class="py-3 px-4">Avg Sentiment</th>
+                <th class="py-3 px-4">App Rating</th>
+                <th class="py-3 px-4">Top Theme</th>
+                <th class="py-3 px-4">Dominant Behaviour</th>
+                <th class="py-3 px-4">Channel Persona</th>
+              </tr>
+            </thead>
+            <tbody id="crossSourceTableBody" class="divide-y divide-slate-100 text-slate-700 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-2">Cross-Source Problem Theme Distribution (%)</h3>
+          <div id="chart-cross-themes" class="h-80 w-full"></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-2">Sentiment Polarity Across Channels (%)</h3>
+          <div id="chart-cross-sent" class="h-80 w-full"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: PROBLEM EXPLORER -->
+    <div id="tabContent-problemExplorer" class="tab-pane hidden flex flex-col gap-6">
+      <!-- Canvas 3 Blueprint Showcase Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-rose-900/50 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              Exit Diagnostics · Canvas 3
+            </span>
+            <span class="text-xs text-rose-300 font-medium">Anatomy of an Exit</span>
+          </div>
+          <h3 class="text-lg font-black tracking-tight text-white mb-1">
+            "The gap between doubt and exit is a question nobody answers in the app."
+          </h3>
+          <p class="text-xs text-rose-200/80 mb-3 max-w-2xl leading-relaxed">
+            Progression from Step 1 Friction (126) → Step 2 Doubt (187) → Step 3 Question (46) → Step 4 Exit (106). Four distinct barrier types: Technical (111), Investment Decision (98), Financial (48), and Emotional (13).
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openImageModal('/grow/3_pause_discontinuation.png', 'Canvas 3: Pause & Discontinuation Anatomy', 'Friction to Exit progression, barrier analysis, and continuer signals.')" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Enlarge Canvas 3 (HD)
+            </button>
+            <button onclick="switchTab('canvasGallery')" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i> View Gallery
+            </button>
+          </div>
+        </div>
+        <div class="relative group cursor-pointer w-full md:w-80 shrink-0 rounded-xl overflow-hidden border-2 border-rose-500/30 shadow-xl bg-slate-900" onclick="openImageModal('/grow/3_pause_discontinuation.png', 'Canvas 3: Pause & Discontinuation Anatomy', 'Friction to Exit progression, barrier analysis, and continuer signals.')">
+          <img src="/grow/3_pause_discontinuation.png" alt="Canvas 3: Pause & Discontinuation Blueprint" class="w-full h-36 object-cover object-top group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i> Click to Zoom HD
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-2">Problem Themes Ranked by Empirical Frequency</h3>
+          <div id="chart-problem-themes" class="h-80 w-full"></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-2">User Journey Stage vs. Problem Theme Matrix</h3>
+          <div id="chart-stage-theme" class="h-80 w-full"></div>
+        </div>
+      </div>
+
+      <!-- Behavioral Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h4 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-1.5">
+            <i data-lucide="compass" class="w-4 h-4 text-brand-600"></i> Journey Stage Distribution
+          </h4>
+          <div id="stageDistributionList" class="space-y-2 text-xs"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h4 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-1.5">
+            <i data-lucide="activity" class="w-4 h-4 text-brand-600"></i> Stated User Behaviour
+          </h4>
+          <div id="behaviourDistributionList" class="space-y-2 text-xs"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h4 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-1.5">
+            <i data-lucide="shield-check" class="w-4 h-4 text-brand-600"></i> Classification Type
+          </h4>
+          <div id="typeDistributionList" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: EVIDENCE EXPLORER -->
+    <div id="tabContent-evidenceExplorer" class="tab-pane hidden flex flex-col gap-4">
+      <!-- Canvas 5 Blueprint Showcase Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-teal-900/50 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-500/30">
+              Traceability Split View · Canvas 5
+            </span>
+            <span class="text-xs text-teal-300 font-medium">Verifiable Feedback Audit</span>
+          </div>
+          <h3 class="text-lg font-black tracking-tight text-white mb-1">
+            Evidence Explorer: Grounded Records Linked to Product Opportunities
+          </h3>
+          <p class="text-xs text-teal-200/80 mb-3 max-w-2xl leading-relaxed">
+            Every record traced from raw source through translation, keyword match categories, confidence scores, and opportunity mapping.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openImageModal('/grow/5_evidence_explorer.png', 'Canvas 5: Evidence Explorer & Record Inspector', 'Split view records table, strikethrough original labels, and detail drawer.')" class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Enlarge Canvas 5 (HD)
+            </button>
+            <button onclick="switchTab('canvasGallery')" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i> View Gallery
+            </button>
+          </div>
+        </div>
+        <div class="relative group cursor-pointer w-full md:w-80 shrink-0 rounded-xl overflow-hidden border-2 border-teal-500/30 shadow-xl bg-slate-900" onclick="openImageModal('/grow/5_evidence_explorer.png', 'Canvas 5: Evidence Explorer & Record Inspector', 'Split view records table, strikethrough original labels, and detail drawer.')">
+          <img src="/grow/5_evidence_explorer.png" alt="Canvas 5: Evidence Explorer Blueprint" class="w-full h-36 object-cover object-top group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i> Click to Zoom HD
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Verifiable Feedback Records</h3>
+            <p class="text-xs text-slate-500">Every record links to actual verbatim quotes, star ratings, dates, and classification audit notes.</p>
+          </div>
+          <button onclick="exportCSV()" class="px-3 py-1.5 text-xs font-semibold bg-brand-50 text-brand-700 hover:bg-brand-100 rounded-lg border border-brand-200 transition flex items-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Filtered CSV
+          </button>
+        </div>
+
+        <!-- Evidence Table -->
+        <div class="overflow-x-auto max-h-[500px]">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm">
+              <tr class="border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
+                <th class="py-3 px-3">Record ID</th>
+                <th class="py-3 px-3">Source</th>
+                <th class="py-3 px-3">Rating</th>
+                <th class="py-3 px-3">Date</th>
+                <th class="py-3 px-3">Theme</th>
+                <th class="py-3 px-3">Stage</th>
+                <th class="py-3 px-3">Evidence Quote</th>
+                <th class="py-3 px-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="evidenceTableBody" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: INSIGHT EXPLORER -->
+    <div id="tabContent-insightExplorer" class="tab-pane hidden flex flex-col gap-6">
+      <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-blue-900 text-xs flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-blue-600 shrink-0"></i>
+          <span><b>Interactive Drilldown:</b> Click on any recurring pattern card below to reveal its exact supporting user records and verbatim quotes.</span>
+        </div>
+        <span class="text-blue-700 font-semibold">7 Grounded Insights</span>
+      </div>
+
+      <!-- Insight Cards Grid -->
+      <div id="insightsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Dynamic Supporting Feedback Reveal Drawer -->
+      <div id="insightDetailDrawer" class="hidden bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div>
+            <h4 id="drawerTitle" class="text-base font-bold text-slate-900">Supporting Feedback</h4>
+            <p id="drawerSubtitle" class="text-xs text-slate-500">Verified evidence excerpts</p>
+          </div>
+          <button onclick="closeInsightDrawer()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div id="drawerQuotesList" class="space-y-3 max-h-96 overflow-y-auto">
+          <!-- Populated when user clicks an insight -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: OPPORTUNITY MATRIX -->
+    <div id="tabContent-opportunityMatrix" class="tab-pane hidden flex flex-col gap-6">
+      <!-- Canvas 4 Blueprint Showcase Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-amber-900/50 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              Intervention Storyboards · Canvas 4
+            </span>
+            <span class="text-xs text-amber-300 font-medium">5 Prioritized Opportunities</span>
+          </div>
+          <h3 class="text-lg font-black tracking-tight text-white mb-1">
+            "Pause, Don't Cancel" & 5 Scored Hypotheses
+          </h3>
+          <p class="text-xs text-amber-200/80 mb-3 max-w-2xl leading-relaxed">
+            Addressability vs. User Impact matrix, evidence calibration ranges, and end-to-end intervention storyboard (Trigger → Today → Intervention → Measure → Guardrail).
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openImageModal('/grow/4_user_needs_opportunities.png', 'Canvas 4: User Needs & Opportunities', 'Five calibrated hypotheses, 2D unmet needs matrix, and storyboard.')" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Enlarge Canvas 4 (HD)
+            </button>
+            <button onclick="switchTab('canvasGallery')" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i> View Gallery
+            </button>
+          </div>
+        </div>
+        <div class="relative group cursor-pointer w-full md:w-80 shrink-0 rounded-xl overflow-hidden border-2 border-amber-500/30 shadow-xl bg-slate-900" onclick="openImageModal('/grow/4_user_needs_opportunities.png', 'Canvas 4: User Needs & Opportunities', 'Five calibrated hypotheses, 2D unmet needs matrix, and storyboard.')">
+          <img src="/grow/4_user_needs_opportunities.png" alt="Canvas 4: Opportunities Blueprint" class="w-full h-36 object-cover object-top group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i> Click to Zoom HD
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-blue-50 border-l-4 border-brand-500 p-4 rounded-lg text-xs text-slate-700 font-mono">
+        <b>Prioritization Formula:</b> Opportunity Score = (Frequency × 0.30) + (Severity × 0.25) + (User Impact × 0.25) + (Addressability × 0.20)
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-2">2D Opportunity Prioritization Bubble Map</h3>
+          <div id="chart-opp-matrix" class="h-96 w-full"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3">
+          <h3 class="text-base font-bold text-slate-900 mb-1">Prioritized Action Items</h3>
+          <div id="opportunityCardsList" class="space-y-3 overflow-y-auto max-h-96">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: AI RESEARCH ASSISTANT -->
+    <div id="tabContent-aiAssistant" class="tab-pane hidden flex flex-col gap-6">
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-4">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="bot" class="w-5 h-5 text-brand-600"></i> AI Research Assistant
+          </h3>
+          <p class="text-xs text-slate-500">Ask natural language research inquiries. Answers are synthesized strictly from the verifiable feedback corpus with explicit citations to Record IDs.</p>
+        </div>
+
+        <!-- Sample Prompts -->
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="font-bold text-slate-500 py-1">Sample Queries:</span>
+          <button onclick="setQuery('Why do users stop or cancel their SIPs on Groww?')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition">Why do users stop SIP?</button>
+          <button onclick="setQuery('What bank mandate and auto-debit issues cause failed debits?')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition">Bank mandate bounce fees?</button>
+          <button onclick="setQuery('How do Reddit discussions differ from Play Store reviews?')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition">Reddit vs Play Store?</button>
+          <button onclick="setQuery('What causes panic during market downturns?')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition">Market downturn panic?</button>
+        </div>
+
+        <!-- Query Box -->
+        <div class="flex gap-2">
+          <input 
+            id="aiQueryInput" 
+            type="text" 
+            placeholder="Ask a question about the collected investor feedback..." 
+            class="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            onkeydown="if(event.key==='Enter') askAssistant()"
+          />
+          <button 
+            id="aiSubmitBtn"
+            onclick="askAssistant()" 
+            class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl transition flex items-center gap-2"
+          >
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Ask
+          </button>
+        </div>
+
+        <!-- AI Response Container -->
+        <div id="aiResponseContainer" class="hidden bg-slate-50 border border-slate-200 p-5 rounded-xl flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <span class="text-xs font-bold text-brand-700 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i> Evidence-Backed Synthesis
+            </span>
+            <span id="aiModelBadge" class="text-[11px] text-slate-400 font-mono">Engine: Groq gpt-oss-20b</span>
+          </div>
+
+          <div id="aiAnswerText" class="text-sm text-slate-800 leading-relaxed space-y-2">
+            <!-- Answer text injected here -->
+          </div>
+
+          <!-- Citations List -->
+          <div class="border-t border-slate-200 pt-3">
+            <h5 class="text-xs font-bold text-slate-600 uppercase mb-2">Supporting Citations:</h5>
+            <div id="aiCitationsList" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+              <!-- Citations injected here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 8: DISCOVERY CHAIN & ASSIGNMENT QUESTIONS -->
+    <div id="tabContent-discoveryChain" class="tab-pane hidden flex flex-col gap-6">
+      
+      <!-- Canvas 6 Blueprint Showcase Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-purple-900/50 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              Pipeline Architecture · Canvas 6
+            </span>
+            <span class="text-xs text-purple-300 font-medium">Validation Scorecard & Calibration</span>
+          </div>
+          <h3 class="text-lg font-black tracking-tight text-white mb-1">
+            Engine & Evidence Log: 8-Stage Architecture & Audit Scorecard
+          </h3>
+          <p class="text-xs text-purple-200/80 mb-3 max-w-2xl leading-relaxed">
+            The full ETL progression: Collection → Normalisation → Relevance Gate → Classification → Field Extraction → AI Review (Claude 100 blind audit) → Calibration & Scoring → Publishing.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openImageModal('/grow/6_engine_evidence_log.png', 'Canvas 6: Engine & Evidence Log Architecture', '8-stage pipeline, validation scorecard, calibrated counts, and changes log.')" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Enlarge Canvas 6 (HD)
+            </button>
+            <button onclick="switchTab('canvasGallery')" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i> View Gallery
+            </button>
+          </div>
+        </div>
+        <div class="relative group cursor-pointer w-full md:w-80 shrink-0 rounded-xl overflow-hidden border-2 border-purple-500/30 shadow-xl bg-slate-900" onclick="openImageModal('/grow/6_engine_evidence_log.png', 'Canvas 6: Engine & Evidence Log Architecture', '8-stage pipeline, validation scorecard, calibrated counts, and changes log.')">
+          <img src="/grow/6_engine_evidence_log.png" alt="Canvas 6: Engine Log Blueprint" class="w-full h-36 object-cover object-top group-hover:scale-105 transition duration-300">
+          <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i> Click to Zoom HD
+          </div>
+        </div>
+      </div>
+
+      <!-- Principle Banner -->
+      <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-5 rounded-2xl shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-700/80 text-blue-100 mb-1">
+            Genuine Discovery Engine Architecture
+          </span>
+          <h3 class="text-lg font-black tracking-tight">The End-to-End Evidence Progression</h3>
+          <p class="text-xs text-blue-200 mt-1 max-w-2xl">
+            Connecting real investor feedback all the way through to product opportunities:
+            <span class="font-bold text-white">Feedback → Finding → User Problem → Unmet Need → Opportunity → Supporting Evidence</span>.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 shrink-0">
+          <a href="/sip_opportunity_matrix.csv" download class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition flex items-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Opportunity Matrix CSV
+          </a>
+          <a href="/sip_evidence_log.csv" download class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold border border-white/20 transition flex items-center gap-1.5">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Evidence Log CSV
+          </a>
+        </div>
+      </div>
+
+      <!-- Linear Progression Diagram -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <h4 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <i data-lucide="arrow-right-circle" class="w-4 h-4 text-brand-600"></i> 6-Stage Discovery Progression (Interactive Opportunities)
+        </h4>
+        <div id="discoveryChainList" class="space-y-4">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- The 5 Assignment Questions Evaluated -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-4">
+        <div>
+          <h4 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="check-square" class="w-4 h-4 text-emerald-600"></i> The Five Assignment Questions Evaluated with Grounded Data
+          </h4>
+          <p class="text-xs text-slate-500">Rigorous empirical answers backed by 269 AI-classified records, quotes, and percentages.</p>
+        </div>
+
+        <div id="assignmentQuestionsAccordion" class="space-y-3">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 9: RESEARCH CANVASES & BLUEPRINTS (HD) -->
+    <div id="tabContent-canvasGallery" class="tab-pane hidden flex flex-col gap-6">
+      
+      <!-- Gallery Header Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 rounded-2xl shadow-xl border border-indigo-800/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+              Groww SIP Insight Lab · Visual Discovery Architecture
+            </span>
+            <span class="text-xs text-indigo-300 font-medium">6 High-Resolution Artifacts</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">Executive Research Canvases & Blueprints</h2>
+          <p class="text-xs text-indigo-200/80 mt-1 max-w-2xl leading-relaxed">
+            High-fidelity visual research blueprints synthesized from multi-source investor feedback across Google Play Store, Apple App Store, Reddit, and YouTube. Click any canvas below to expand into full-screen high definition.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 shrink-0">
+          <button onclick="openImageModal('/grow/1_overview.png', 'Canvas 1: Executive Research Overview', 'Headline: First-time investors quit in confusion, not panic')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+            <i data-lucide="maximize-2" class="w-4 h-4"></i> Start Interactive Tour
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Canvas Navigation Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Canvas 1 Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition group">
+          <div class="relative cursor-pointer overflow-hidden bg-slate-950 h-48" onclick="openImageModal('/grow/1_overview.png', 'Canvas 1: Executive Overview & 9 Research Questions', 'Headline finding: First-time SIP investors don\'t quit in panic. They quit in confusion.')">
+            <img src="/grow/1_overview.png" alt="Canvas 1" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-300">
+            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+              <i data-lucide="zoom-in" class="w-4 h-4"></i> Enlarge Full Canvas (HD)
+            </div>
+            <span class="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-900/90 text-indigo-200 backdrop-blur-sm border border-indigo-700/50">
+              Canvas 1
+            </span>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-brand-600 transition">1. Executive Overview & 9 Questions</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Headline: First-time SIP investors don't quit in panic. They quit in confusion. Signal funnel and 9 research questions evaluated.</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+              <button onclick="openImageModal('/grow/1_overview.png', 'Canvas 1: Executive Overview', 'Headline finding: Confusion vs Panic')" class="text-brand-600 font-semibold hover:text-brand-800 flex items-center gap-1">
+                <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Inspect HD
+              </button>
+              <button onclick="switchTab('overview')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium">
+                Live Data <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas 2 Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition group">
+          <div class="relative cursor-pointer overflow-hidden bg-slate-950 h-48" onclick="openImageModal('/grow/2_investor_behaviour.png', 'Canvas 2: Investor Behaviour & Dynamics', 'Why investors start, what they check, outside-app communities, and reactions to declining returns.')">
+            <img src="/grow/2_investor_behaviour.png" alt="Canvas 2" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-300">
+            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+              <i data-lucide="zoom-in" class="w-4 h-4"></i> Enlarge Full Canvas (HD)
+            </div>
+            <span class="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-900/90 text-blue-200 backdrop-blur-sm border border-blue-700/50">
+              Canvas 2
+            </span>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition">2. Investor Behaviour & Journeys</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">5 journey stages, motives (goals, wealth), checking frequency (29 daily vs 10 market moves), and outside-app search.</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+              <button onclick="openImageModal('/grow/2_investor_behaviour.png', 'Canvas 2: Investor Behaviour', 'Stages 1-5, motives, habits, and community asks')" class="text-blue-600 font-semibold hover:text-blue-800 flex items-center gap-1">
+                <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Inspect HD
+              </button>
+              <button onclick="switchTab('crossSource')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium">
+                Live Data <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas 3 Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition group">
+          <div class="relative cursor-pointer overflow-hidden bg-slate-950 h-48" onclick="openImageModal('/grow/3_pause_discontinuation.png', 'Canvas 3: Pause & Discontinuation Anatomy', 'Anatomy of an exit: Friction (126) → Doubt (187) → Question (46) → Exit (106). 4 barrier types.')">
+            <img src="/grow/3_pause_discontinuation.png" alt="Canvas 3" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-300">
+            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+              <i data-lucide="zoom-in" class="w-4 h-4"></i> Enlarge Full Canvas (HD)
+            </div>
+            <span class="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-900/90 text-rose-200 backdrop-blur-sm border border-rose-700/50">
+              Canvas 3
+            </span>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-rose-600 transition">3. Pause & Discontinuation Anatomy</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">"The gap between doubt and exit is a question nobody answers in the app." Barrier analysis and drop-off vs continuer signals.</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+              <button onclick="openImageModal('/grow/3_pause_discontinuation.png', 'Canvas 3: Pause & Discontinuation', 'Anatomy of an exit and barrier analysis')" class="text-rose-600 font-semibold hover:text-rose-800 flex items-center gap-1">
+                <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Inspect HD
+              </button>
+              <button onclick="switchTab('problemExplorer')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium">
+                Live Data <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas 4 Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition group">
+          <div class="relative cursor-pointer overflow-hidden bg-slate-950 h-48" onclick="openImageModal('/grow/4_user_needs_opportunities.png', 'Canvas 4: User Needs & Opportunities', 'Five calibrated hypotheses, 2D unmet needs matrix, and Pause-Don\'t-Cancel intervention storyboard.')">
+            <img src="/grow/4_user_needs_opportunities.png" alt="Canvas 4" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-300">
+            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+              <i data-lucide="zoom-in" class="w-4 h-4"></i> Enlarge Full Canvas (HD)
+            </div>
+            <span class="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-900/90 text-amber-200 backdrop-blur-sm border border-amber-700/50">
+              Canvas 4
+            </span>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-amber-600 transition">4. User Needs & Opportunities</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Five hypotheses scored on calibrated evidence (OPP-01 to OPP-05) and the end-to-end "Pause, Don't Cancel" storyboard.</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+              <button onclick="openImageModal('/grow/4_user_needs_opportunities.png', 'Canvas 4: User Needs & Opportunities', 'Five calibrated hypotheses and storyboard')" class="text-amber-600 font-semibold hover:text-amber-800 flex items-center gap-1">
+                <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Inspect HD
+              </button>
+              <button onclick="switchTab('opportunityMatrix')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium">
+                Live Data <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas 5 Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition group">
+          <div class="relative cursor-pointer overflow-hidden bg-slate-950 h-48" onclick="openImageModal('/grow/5_evidence_explorer.png', 'Canvas 5: Evidence Explorer & Traceability', 'Every record with original vs corrected labels, strikethrough audit, and detail inspection card.')">
+            <img src="/grow/5_evidence_explorer.png" alt="Canvas 5" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-300">
+            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+              <i data-lucide="zoom-in" class="w-4 h-4"></i> Enlarge Full Canvas (HD)
+            </div>
+            <span class="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-bold bg-teal-900/90 text-teal-200 backdrop-blur-sm border border-teal-700/50">
+              Canvas 5
+            </span>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-teal-600 transition">5. Evidence Explorer & Traceability</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">Split-view interface: records table with original strikethrough labels and granular record inspector card with translations.</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+              <button onclick="openImageModal('/grow/5_evidence_explorer.png', 'Canvas 5: Evidence Explorer', 'Split view records table and inspector card')" class="text-teal-600 font-semibold hover:text-teal-800 flex items-center gap-1">
+                <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Inspect HD
+              </button>
+              <button onclick="switchTab('evidenceExplorer')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium">
+                Live Data <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas 6 Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition group">
+          <div class="relative cursor-pointer overflow-hidden bg-slate-950 h-48" onclick="openImageModal('/grow/6_engine_evidence_log.png', 'Canvas 6: Engine & Evidence Log Architecture', '8-stage pipeline, validation scorecard (Claude 100 blind audit), calibrated counts, and changes log.')">
+            <img src="/grow/6_engine_evidence_log.png" alt="Canvas 6" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-300">
+            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold gap-1.5 backdrop-blur-[1px]">
+              <i data-lucide="zoom-in" class="w-4 h-4"></i> Enlarge Full Canvas (HD)
+            </div>
+            <span class="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-900/90 text-purple-200 backdrop-blur-sm border border-purple-700/50">
+              Canvas 6
+            </span>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-purple-600 transition">6. Engine Architecture & Validation</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">8-stage processing pipeline, validation scorecard with agreement metrics, calibrated counts, and evidence log audit.</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+              <button onclick="openImageModal('/grow/6_engine_evidence_log.png', 'Canvas 6: Engine Architecture', '8-stage ETL and validation scorecard')" class="text-purple-600 font-semibold hover:text-purple-800 flex items-center gap-1">
+                <i data-lucide="maximize" class="w-3.5 h-3.5"></i> Inspect HD
+              </button>
+              <button onclick="switchTab('discoveryChain')" class="text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium">
+                Live Data <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- High-Res Image Lightbox Modal -->
+  <div id="imageLightboxModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-between p-3 sm:p-6 transition-all duration-300">
+    <!-- Top Modal Bar -->
+    <div class="w-full max-w-6xl flex items-center justify-between px-4 py-2 text-white bg-slate-900/80 rounded-xl border border-slate-800 shadow-lg mb-2">
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div>
+          <h3 id="lightboxTitle" class="text-sm sm:text-base font-bold text-white leading-tight">Research Canvas Blueprint</h3>
+          <p id="lightboxCaption" class="text-xs text-slate-400">High-resolution Groww SIP Insight Lab dashboard artifact</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a id="lightboxDownloadBtn" href="#" download class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1.5" title="Download Canvas Image">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Download</span>
+        </a>
+        <button onclick="closeImageModal()" class="p-2 bg-white/10 hover:bg-red-600 text-white rounded-lg transition" title="Close Lightbox (Esc)">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Image Viewport -->
+    <div class="w-full max-w-6xl flex-1 flex items-center justify-center overflow-auto p-1 sm:p-2 relative">
+      <img id="lightboxImg" src="" alt="Canvas Blueprint" class="max-h-[75vh] max-w-full rounded-xl shadow-2xl object-contain border border-slate-700/60 bg-white">
+    </div>
+
+    <!-- Bottom Quick Nav -->
+    <div class="w-full max-w-6xl flex items-center justify-center gap-2 py-2 overflow-x-auto text-xs bg-slate-900/80 rounded-xl border border-slate-800 shadow-lg mt-2">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-2 hidden sm:inline">Jump to Canvas:</span>
+      <button onclick="openImageModal('/grow/1_overview.png', 'Canvas 1: Executive Overview & 9 Questions', 'Headline finding: First-time investors quit in confusion, not panic')" class="px-2.5 py-1 bg-white/10 hover:bg-indigo-600 text-white rounded-md transition whitespace-nowrap">1. Overview</button>
+      <button onclick="openImageModal('/grow/2_investor_behaviour.png', 'Canvas 2: Investor Behaviour & Dynamics', 'Journey stages, outside-app search, and cohort actions')" class="px-2.5 py-1 bg-white/10 hover:bg-blue-600 text-white rounded-md transition whitespace-nowrap">2. Behaviour</button>
+      <button onclick="openImageModal('/grow/3_pause_discontinuation.png', 'Canvas 3: Pause & Discontinuation Anatomy', 'Anatomy of an exit, 4 barrier types, and continuer signals')" class="px-2.5 py-1 bg-white/10 hover:bg-rose-600 text-white rounded-md transition whitespace-nowrap">3. Discontinuation</button>
+      <button onclick="openImageModal('/grow/4_user_needs_opportunities.png', 'Canvas 4: User Needs & Opportunities', 'Five calibrated hypotheses & Pause-Don\'t-Cancel storyboard')" class="px-2.5 py-1 bg-white/10 hover:bg-amber-600 text-white rounded-md transition whitespace-nowrap">4. Opportunities</button>
+      <button onclick="openImageModal('/grow/5_evidence_explorer.png', 'Canvas 5: Evidence Explorer & Traceability', 'Verifiable feedback records split-view & traceability')" class="px-2.5 py-1 bg-white/10 hover:bg-teal-600 text-white rounded-md transition whitespace-nowrap">5. Evidence</button>
+      <button onclick="openImageModal('/grow/6_engine_evidence_log.png', 'Canvas 6: Engine Architecture & Scorecard', '8-stage pipeline architecture, validation scorecard & audit')" class="px-2.5 py-1 bg-white/10 hover:bg-purple-600 text-white rounded-md transition whitespace-nowrap">6. Engine Log</button>
+    </div>
+  </div>
+
+  <!-- Record Inspector Modal -->
+  <div id="recordModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="modalTitle" class="text-base font-bold text-slate-900">Record Inspection</h3>
+        <button onclick="closeModal()" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="modalBody" class="text-xs text-slate-700 space-y-3">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-400">
+      Groww SIP Insight Lab · AI Discovery Engine · Deployed on Vercel Edge Network
+    </div>
+  </footer>
+
+  <!-- App Logic -->
+  <script src="/app.js"></script>
+</body>
+</html>
+

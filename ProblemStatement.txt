@@ -1,0 +1,64 @@
+# Problem Statement: SIP Insight Lab — AI-Powered Discovery Engine
+
+As a Product Manager on the Growth team at Groww, my goal is to increase the
+percentage of first-time mutual fund investors who still have an active SIP 12
+months after starting their first one. An active SIP means at least one
+successful instalment in the last 30 days.
+
+First-time investors stop, pause or lose their SIPs for very different reasons.
+Some SIPs end without any decision at all: a debit fails because the salary
+hasn't arrived yet, and after three misses the SIP is cancelled. Others stop
+because the app or payment flow confused them, because early returns missed
+what a calculator, friend or finfluencer promised, because their income
+changed, or because they made a deliberate, informed choice. Each of these
+needs a different fix, yet the evidence is scattered across app reviews,
+Reddit, investing forums and YouTube comments, where no one can tell them apart
+or measure how often each happens.
+
+Three traps make this evidence easy to misread. First, saying is not doing: a
+user who writes "I'm thinking of stopping" or sounds negative has not
+necessarily stopped, so intent and action must be recorded separately. Second,
+not every stop is a decision: an involuntary lapse and a chosen stop look
+identical in a retention metric but call for opposite solutions. Third,
+studying only the people who leave hides half the answer: what protects the
+investors who stay matters as much as what pushes others out.
+
+SIP Insight Lab is an AI-powered discovery engine that addresses this. It
+collects permitted public feedback from Google Play, the App Store, Reddit,
+TradingQ&A and YouTube, removes personal details, and classifies each item
+against a consistent research taxonomy. For each item it records the investor's
+lifecycle stage and what they actually did, and keeps that separate from what
+they said they would do. It also records the kind of stop, the root cause, the
+moment that triggered the change, where they went for help outside the app,
+and, for those who continued, what kept them going.
+
+From this, the engine reveals:
+- the gap between stated intent and actual action
+- how much churn comes from silent, involuntary lapses
+- when in the first 12 months doubt or failure strikes
+- what separates continuers from those who drop off
+- how these patterns differ by age, income stability, source of money and who
+  influenced the investor
+
+Every insight links back to its original quotes and sources. A second AI agent
+challenges each leading theme by searching for counter-evidence. The strongest
+opportunities become hypothesis cards, each paired with an interview guide for
+validation.
+
+Quality is measured, not assumed. The engine's classifications are compared
+against a hand-labelled golden set of at least 20 examples. Agreement and
+errors are reported openly, low-confidence items go to human review, and every
+correction or rejection of AI output is logged in an exportable AI Evidence
+Log. Opportunities are ranked using a visible formula based on frequency,
+severity, concentration in the first six months, and whether the problem can be
+solved without investment advice or fear-based nudges.
+
+Public feedback is treated as a source of hypotheses, not as a measure of
+retention or proof of causality. Findings will be validated through user
+interviews and, where available, internal behavioural data. The solution will
+never recommend specific funds or stocks, and will not rely on fear, FOMO,
+urgency or manipulative nudges.
+
+The goal is to replace scattered opinions with traceable evidence. That
+evidence should show Groww not just why first-time investors stop, but which
+stops a better product could have prevented.

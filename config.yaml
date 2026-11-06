@@ -1,0 +1,153 @@
+# =============================================================================
+# SIP Insight Lab — Project Configuration (Task 0.6)
+# =============================================================================
+# This file defines all tunable parameters for the engine.
+# Values here are defaults; override via environment variables in .env.
+# =============================================================================
+
+project:
+  name: SIP Insight Lab
+  version: "0.1.0"
+  team: Growth, Groww
+  phase: 3   # Current implementation phase (0–5)
+
+# ---------------------------------------------------------------------------
+# Taxonomy
+# ---------------------------------------------------------------------------
+taxonomy:
+  active_version: "1.0"
+  path: ./taxonomy/taxonomy_v1.yaml
+
+# ---------------------------------------------------------------------------
+# Classification Engine (Task 0.6 — confidence threshold)
+# ---------------------------------------------------------------------------
+classification:
+  # Items with an aggregate confidence_score below this threshold are
+  # routed to the human_review_queue instead of being auto-accepted.
+  confidence_threshold: 0.75
+
+  # Maximum tokens per LLM call (prompt + completion)
+  max_tokens: 2048
+
+  # Number of few-shot examples to inject into each prompt
+  few_shot_count: 3
+
+  # Retry configuration for the LLM API wrapper
+  max_retries: 3
+  retry_backoff_seconds: 2.0
+
+  # LLM provider — set to "openai" or "google_gemini"
+  provider: openai
+
+# ---------------------------------------------------------------------------
+# Human Review SLA (Task 0.6)
+# ---------------------------------------------------------------------------
+human_review:
+  # SLA: a queued item must be reviewed within this many hours
+  sla_hours: 48
+
+  # Alert if the human_review_queue backlog exceeds this many items
+  backlog_alert_threshold: 50
+
+# ---------------------------------------------------------------------------
+# Quality Assurance (Golden Set)
+# ---------------------------------------------------------------------------
+qa:
+  # Minimum number of hand-labelled items in the golden set
+  min_golden_set_size: 20
+
+  # Target overall accuracy (exact match across all fields)
+  target_overall_accuracy: 0.80
+
+  # Target F1 score per taxonomy field
+  target_per_field_f1: 0.75
+
+  # If human_review_rate exceeds this, trigger a prompt review
+  max_human_review_rate: 0.20
+
+# ---------------------------------------------------------------------------
+# Data Collection
+# ---------------------------------------------------------------------------
+collection:
+  targets:
+    play_store:
+      app_id: com.nextbillion.groww
+      min_items: 500
+      delay_seconds: 2
+
+    app_store:
+      app_id: "1404457431"
+      country: in
+      min_items: 500
+      delay_seconds: 1
+
+    reddit:
+      subreddits:
+        - IndiaInvestments
+        - mutualfunds
+        - Groww
+        - personalfinanceindia
+      search_terms:
+        - SIP
+        - systematic investment plan
+        - mutual fund cancel
+        - SIP stopped
+        - groww SIP
+      min_items: 500
+      delay_seconds: 2
+
+    tradingqa:
+      base_url: https://tradingqna.com
+      tags:
+        - sip
+        - mutual-fund
+        - groww
+      min_items: 300
+      delay_seconds: 3
+
+    youtube:
+      search_queries:
+        - "groww SIP review"
+        - "SIP mutual fund beginner India"
+        - "should I stop SIP"
+        - "SIP cancelled Groww"
+      max_videos_per_query: 5
+      max_comments_per_video: 100
+      min_items: 500
+      delay_seconds: 1
+
+# ---------------------------------------------------------------------------
+# Opportunity Scoring Formula Weights
+# ---------------------------------------------------------------------------
+opportunity_scoring:
+  frequency_weight: 0.30
+  severity_weight: 0.25
+  first_6mo_concentration_weight: 0.25
+  addressability_weight: 0.20
+
+# ---------------------------------------------------------------------------
+# Ethics Guardrails (hard constraints — do not change)
+# ---------------------------------------------------------------------------
+ethics:
+  # Blocks any hypothesis card that contains these patterns
+  blocked_phrases:
+    - "invest in [fund]"
+    - "buy this fund"
+    - "FOMO"
+    - "fear of missing out"
+    - "act now"
+    - "limited time"
+    - "you will lose"
+    - "market crash"
+  nudge_checklist_required: true
+  pii_scan_before_export: true
+  findings_are_hypotheses_only: true
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+logging:
+  level: INFO            # DEBUG | INFO | WARNING | ERROR
+  log_dir: ./outputs/logs
+  max_bytes: 10485760    # 10 MB per log file
+  backup_count: 5

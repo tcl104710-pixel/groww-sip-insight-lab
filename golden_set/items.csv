@@ -1,0 +1,26 @@
+item_id,source,source_id,star_rating,text
+gs_item_001,play_store,rev_play_001,1,My SIP got cancelled automatically after 3 failed debits because SBI server was down. Groww should have notified me before cancelling!
+gs_item_002,app_store,rev_app_002,1,e-Mandate rejected for ICICI bank account and SIP was cancelled. Customer support took 5 days to respond.
+gs_item_003,reddit,post_red_003,,Forgot to maintain minimum balance in bank account on the 5th. Missed 2 debits and now my SIP is stopped.
+gs_item_004,tradingqa,tqa_004,,NACH mandate expired after 1 year without any email alert. Unable to resume the same folio.
+gs_item_005,play_store,rev_play_005,1,App update made SIP modification impossible. Tried pausing for a month but the toggle throws network error.
+gs_item_006,app_store,rev_app_006,2,Payment gateway failed twice during SIP instalment debit. Money debited from bank but units not allotted.
+gs_item_007,reddit,post_red_007,,KYC rejected 3 times for signature mismatch. Unable to complete first SIP debit.
+gs_item_008,reddit,post_red_008,,Invested in midcap fund for 5 months. Calculator promised 15% return but portfolio is down 4%. Stopping my SIP.
+gs_item_009,play_store,rev_play_009,1,YouTube finfluencer recommended this flexi cap fund claiming 20% guaranteed returns. Complete scam I am in loss.
+gs_item_010,tradingqa,tqa_010,,Nifty dropped 600 points last week and my fund NAV fell. Scared of losing more capital so I stopped the SIP.
+gs_item_011,reddit,post_red_011,,"Expecting 12% in 3 months was my mistake, but returns are too low compared to FD right now. Exiting."
+gs_item_012,reddit,post_red_012,,Laid off from tech company last week. Pausing my 20k SIP until I secure another job.
+gs_item_013,play_store,rev_play_013,3,Family medical emergency forced me to cancel my monthly SIP and redeem accumulated units.
+gs_item_014,tradingqa,tqa_014,,Salary reduced by 25% due to company restructuring. Need to cut discretionary investment outflow.
+gs_item_015,reddit,post_red_015,,Completed 3 years of SIP and reached my target 5 lakh downpayment for a car. Cancelled SIP to book profits.
+gs_item_016,tradingqa,tqa_016,,Switching from active large cap fund to Nifty 50 direct index fund on the same Groww app. Stopped the active fund SIP.
+gs_item_017,play_store,rev_play_017,1,"Why was money deducted on Sunday when stock market is closed? Groww stole my money, lodge police complaint!"
+gs_item_018,youtube,yt_018,,I am confused about NAV. If NAV increases does my profit decrease? Nobody explains clearly.
+gs_item_019,reddit,post_red_019,,Did not realize market fluctuation causes NAV to go down temporarily. Thought mutual funds only go up.
+gs_item_020,reddit,post_red_020,,Colleague convinced me that mutual funds are crashing and urged me to withdraw everything and buy gold coins.
+gs_item_021,youtube,yt_021,,Finfluencer said small caps are overheated and advised shifting to debt funds. Cancelled my Nippon small cap SIP.
+gs_item_022,reddit,post_red_022,,Investing in Parag Parikh Flexi Cap for 18 months. Rupee cost averaging is working wonders during market corrections. Continuing every month!
+gs_item_023,play_store,rev_play_023,5,Auto debit on 1st of every month without fail. Set it and forget it. Excellent disciplined investing experience.
+gs_item_024,youtube,yt_024,,"Seeing positive returns of 14% after 2 years of consistent SIP. Compounding is real, staying invested for 10 years."
+gs_item_025,reddit,post_red_025,,Just started researching personal finance. What is the difference between direct and regular mutual funds?

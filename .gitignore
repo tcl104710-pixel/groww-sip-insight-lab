@@ -1,0 +1,53 @@
+# =============================================================================
+# SIP Insight Lab — .gitignore
+# =============================================================================
+
+# --- Secrets & credentials ---
+.env
+*.key
+secrets/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+.Python
+
+# --- Database ---
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# --- Raw & collected data (may contain PII before cleaning) ---
+data/raw/
+data/cleaned/
+
+# --- Outputs & logs ---
+outputs/logs/
+*.log
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb
+
+# --- OS ---
+desktop.ini
+
+# --- Vercel ---
+.vercel/

@@ -1,0 +1,328 @@
+# =============================================================================
+# SIP Insight Lab — Research Taxonomy
+# Version : 2.0
+# Status  : FROZEN (Approved post-Phase 5 Retrospective & Stakeholder Readout)
+# Owner   : Growth PM, Groww
+# Updated : 2026-11-03
+#
+# RULES:
+#   - Incorporates empirical findings from Phase 3 QA, Phase 4 synthesis,
+#     and Phase 5 user interview handoffs.
+#   - Every LABELLED_ITEM in the DB must store the `taxonomy_version` it used.
+# =============================================================================
+
+version: "2.0"
+frozen: true
+
+# ---------------------------------------------------------------------------
+# Investor Lifecycle Stages
+# When in the SIP journey did the investor write this feedback?
+# Enhanced in v2.0 with explicit tenure markers to eliminate LS-01 / LS-02 ambiguity.
+# ---------------------------------------------------------------------------
+lifecycle_stages:
+  - code: LS-00
+    label: pre_first_sip
+    description: >
+      Investor has not yet completed their first SIP; feedback relates to
+      onboarding, KYC verification, mandate setup, or initial fund discovery.
+    tenure_cues: ["setting up", "first time", "trying to start", "KYC pending", "registration"]
+
+  - code: LS-01
+    label: 0_3mo
+    description: >
+      Investor is in the first 0–3 months of their first SIP.
+      Highest risk window for involuntary mandate failure and early checkout friction.
+    tenure_cues: ["first debit", "second month", "started 2 weeks ago", "1st instalment", "new to mutual funds"]
+
+  - code: LS-02
+    label: 3_6mo
+    description: >
+      Investor is between 3 and 6 months into their first SIP.
+      Peak window for return expectation mismatch colliding with sideways market movements.
+    tenure_cues: ["4 months", "5 months", "quarterly statement", "investing since few months", "returns are red"]
+
+  - code: LS-03
+    label: 6_12mo
+    description: >
+      Investor is between 6 and 12 months into their first SIP.
+      Approaching the retention threshold; concerns shift toward fund portfolio switching or goal tracking.
+    tenure_cues: ["half a year", "7 months", "almost a year", "thinking of switching funds"]
+
+  - code: LS-04
+    label: 12mo_plus
+    description: >
+      Investor has crossed the 12-month mark. SIP is considered "retained" per the business goal.
+      Benchmark cohort for retention factors and long-term habit formation.
+    tenure_cues: ["1 year+", "continuing for 2 years", "set it and forget it", "compounding working"]
+
+  - code: LS-99
+    label: unknown
+    description: >
+      Lifecycle stage cannot be inferred from the feedback text.
+
+# ---------------------------------------------------------------------------
+# Stop Types
+# Was the SIP ending a conscious choice or an involuntary lapse?
+# ---------------------------------------------------------------------------
+stop_types:
+  - code: ST-01
+    label: involuntary_lapse
+    description: >
+      The SIP ended or paused without a deliberate decision by the investor.
+      Examples: debit failure, mandate rejection, auto-cancellation after
+      3 missed instalments, bank technical error.
+
+  - code: ST-02
+    label: deliberate_exit
+    description: >
+      The investor made a conscious, active decision to stop or pause the SIP.
+      Examples: goal achieved, switching platforms, chosen pause for liquidity.
+
+  - code: ST-03
+    label: not_applicable
+    description: >
+      The investor has NOT stopped. Feedback is from a continuing investor.
+
+  - code: ST-99
+    label: unknown
+    description: >
+      Cannot determine from feedback text whether the stop was
+      involuntary or deliberate.
+
+# ---------------------------------------------------------------------------
+# Stated Intent
+# What did the investor SAY they would do? (separate from actual_action)
+# ---------------------------------------------------------------------------
+stated_intents:
+  - continue
+  - pause
+  - stop
+  - neutral     # No clear forward-looking intent stated
+  - unknown     # Cannot be inferred
+
+# ---------------------------------------------------------------------------
+# Actual Action
+# What did the investor ACTUALLY do? (separate from stated_intent)
+# ---------------------------------------------------------------------------
+actual_actions:
+  - active      # SIP is still running
+  - paused      # SIP is temporarily on hold
+  - cancelled   # SIP has been permanently stopped
+  - unknown     # Cannot be inferred from the feedback
+
+# ---------------------------------------------------------------------------
+# Root Causes
+# Why did the investor stop, pause, or struggle with their SIP?
+# Granular subcategories added in v2.0 based on pilot error analysis.
+# ---------------------------------------------------------------------------
+root_causes:
+  - code: RC-01
+    label: Involuntary Lapse
+    addressable: true
+    description: >
+      SIP ended due to a technical, banking, or procedural failure, not a deliberate
+      investor choice.
+    subcategories:
+      - label: Bank server downtime on debit date
+        description: Public sector or private bank core banking server timed out during scheduled debit.
+      - label: UPI AutoPay mandate failure / timeout
+        description: UPI AutoPay recurring mandate failed to execute or expired.
+      - label: e-Mandate / NACH registration rejection
+        description: Bank rejected e-sign or mandate during initial verification.
+      - label: Insufficient balance timing mismatch
+        description: Salary credited later than SIP date; debit attempted before funds settled.
+      - label: Auto-cancellation after 3 misses without warning
+        description: Groww/AMC auto-cancelled SIP without prior warning or recovery grace period.
+      - label: Payment gateway timeout / debit without unit allotment
+        description: Money deducted from bank account but units not allotted by AMC.
+
+  - code: RC-02
+    label: UX & Payment Friction
+    addressable: true
+    description: >
+      The app interface, onboarding flow, or payment process confused or
+      frustrated the investor enough to cause churn or near-churn.
+    subcategories:
+      - label: Broken SIP modification / pause toggle
+        description: App toggle throws network error or fails to persist pause request.
+      - label: Inability to skip single month
+        description: User forced to cancel entire SIP because 'Skip Next Installment' is unavailable.
+      - label: Confusing KYC / bank account verification flow
+        description: Documentation or signature mismatch hurdles delayed or blocked the investor.
+      - label: Delayed unit allotment status tracking
+        description: Lack of real-time visibility into NAV allotment timeline.
+
+  - code: RC-03
+    label: Return Disappointment
+    addressable: true
+    description: >
+      The investor's actual returns fell short of expectations set by
+      calculators, finfluencers, friends, or advertising.
+    subcategories:
+      - label: Linear CAGR calculator mismatch
+        description: Marketing SIP calculator showed static 15-20% compounding curves, creating unrealistic linear expectations.
+      - label: Short-term sideways market fluctuation in first 3-6mo
+        description: Sideways market in first 3-6 months triggered panic due to flat or slightly negative returns.
+      - label: Finfluencer guaranteed return promise gap
+        description: Social media creator promised outsized or guaranteed returns on specific fund categories.
+      - label: Conflation of equity volatility with loss of principal
+        description: Investor evaluated equity SIP over too short a horizon, assuming temporary NAV drop is permanent capital loss.
+
+  - code: RC-04
+    label: Income Change
+    addressable: false
+    description: >
+      A genuine change in the investor's financial situation forced a
+      reduction or cancellation of the SIP.
+    subcategories:
+      - label: Job loss
+      - label: Salary reduction
+      - label: Emergency expense
+      - label: Increased fixed obligations (EMIs)
+
+  - code: RC-05
+    label: Deliberate Informed Exit
+    addressable: false
+    description: >
+      The investor made a well-informed, rational decision to stop or switch.
+      This is not a product failure.
+    subcategories:
+      - label: Goal achieved
+      - label: Fund switch (same platform)
+      - label: Platform switch
+      - label: Redemption for planned financial milestone
+
+  - code: RC-06
+    label: Knowledge Gap
+    addressable: true
+    description: >
+      The investor lacked understanding of how SIPs, NAV, or mutual funds
+      work, leading to incorrect expectations or premature exit.
+    subcategories:
+      - label: Did not understand SIP rupee-cost averaging mechanics
+      - label: Confused about NAV calculation and unit allotment
+      - label: Did not understand market volatility is normal and expected
+      - label: Inability to interpret annualized return vs absolute return
+
+  - code: RC-07
+    label: External Influence
+    addressable: true
+    description: >
+      The investor's decision was heavily shaped by external voices —
+      peers, family, or finfluencers — rather than personal analysis.
+    subcategories:
+      - label: Peer advice (positive)
+      - label: Peer advice (negative / stop advice)
+      - label: Finfluencer recommendation (positive)
+      - label: Finfluencer recommendation (negative / panic advice)
+      - label: Family pressure
+
+  - code: RC-99
+    label: Unclassifiable
+    addressable: false
+    description: >
+      Feedback does not contain enough information to assign a root cause.
+
+# ---------------------------------------------------------------------------
+# Retention Factors
+# For investors who CONTINUED — what kept them going?
+# ---------------------------------------------------------------------------
+retention_factors:
+  - code: RF-01
+    label: Seeing positive returns (even small)
+    description: Even modest positive returns reinforced conviction.
+
+  - code: RF-02
+    label: Community / peer encouragement
+    description: Friends, family, or online communities validated the decision.
+
+  - code: RF-03
+    label: App nudges or reminders
+    description: In-app notifications or pre-debit alerts kept the investor on track.
+
+  - code: RF-04
+    label: Long-term goal tracking visible
+    description: Seeing progress toward a named goal (e.g., Emergency Fund) provided motivation.
+
+  - code: RF-05
+    label: Educational content within app
+    description: In-app explainers helped the investor understand volatility.
+
+  - code: RF-06
+    label: Automated / hassle-free experience
+    description: >
+      The set-it-and-forget-it nature of SIP made it effortless to stay invested.
+
+  - code: RF-07
+    label: Rupee cost averaging understanding
+    description: Investor understood that buying at lower NAV during dips accumulates more units.
+
+  - code: RF-08
+    label: UPI AutoPay convenience
+    description: Seamless automated execution via modern UPI AutoPay mandates without netbanking failures.
+
+  - code: RF-99
+    label: Unknown / not stated
+    description: Retention factor cannot be inferred from the text.
+
+# ---------------------------------------------------------------------------
+# Investor Segments
+# Demographic and behavioural dimensions for cross-tab analysis.
+# ---------------------------------------------------------------------------
+investor_segments:
+  age_groups:
+    - "18-24"
+    - "25-30"
+    - "31-40"
+    - "41-50"
+    - "51+"
+    - "unknown"
+
+  income_stability:
+    - salaried_stable      # Regular monthly salary
+    - salaried_variable    # Commission / bonus-heavy income
+    - self_employed        # Business / freelance income
+    - student              # No primary income
+    - unknown
+
+  money_source:
+    - own_savings          # Investor's own accumulated savings
+    - salary_emi           # Monthly salary earmarked for SIP
+    - gift_windfall        # Received as gift or windfall
+    - borrowed             # Borrowed to invest (high-risk signal)
+    - unknown
+
+  influencer_type:
+    - finfluencer_youtube  # YouTube personal finance creator
+    - finfluencer_instagram
+    - finfluencer_twitter_x
+    - peer_friend
+    - family
+    - financial_advisor    # SEBI-registered advisor
+    - self_research        # No external influence
+    - unknown
+
+# ---------------------------------------------------------------------------
+# Help Sources
+# ---------------------------------------------------------------------------
+help_sources:
+  - reddit
+  - youtube
+  - tradingqa
+  - peer_friend
+  - financial_advisor
+  - groww_customer_support
+  - google_search
+  - other
+  - none_mentioned
+
+# ---------------------------------------------------------------------------
+# Classification & QA Governance Targets
+# ---------------------------------------------------------------------------
+classification_config:
+  confidence_threshold: 0.75
+  human_review_sla_hours: 48
+  min_golden_set_size: 20
+  target_overall_accuracy: 0.80
+  target_per_field_f1: 0.75
+  max_human_review_rate: 0.20

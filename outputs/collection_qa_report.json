@@ -1,0 +1,64 @@
+{
+  "run_at": "2026-10-31T16:10:16.761545+00:00",
+  "dry_run": false,
+  "sources": {
+    "app_store": {
+      "collected": 0,
+      "written_to_db": 0,
+      "duration_seconds": 2.5
+    }
+  },
+  "queue_stats": {
+    "total_enqueued": 0,
+    "total_duplicate": 0,
+    "total_written": 0,
+    "total_errors": 0,
+    "queue_depth": 0,
+    "duplicate_rate": 0.0
+  },
+  "db_counts": {
+    "play_store": 0,
+    "app_store": 0,
+    "reddit": 0,
+    "tradingqa": 0,
+    "youtube": 0,
+    "total": 0
+  },
+  "exit_criteria": {
+    "play_store": {
+      "target": 500,
+      "actual": 0,
+      "met": false
+    },
+    "app_store": {
+      "target": 500,
+      "actual": 0,
+      "met": false
+    },
+    "reddit": {
+      "target": 500,
+      "actual": 0,
+      "met": false
+    },
+    "tradingqa": {
+      "target": 300,
+      "actual": 0,
+      "met": false
+    },
+    "youtube": {
+      "target": 500,
+      "actual": 0,
+      "met": false
+    },
+    "total_2300": {
+      "target": 2300,
+      "actual": 0,
+      "met": false
+    },
+    "dedup_rate_lt_30pct": {
+      "target": 0.3,
+      "actual": 0.0,
+      "met": true
+    }
+  }
+}

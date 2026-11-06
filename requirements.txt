@@ -1,0 +1,48 @@
+# =============================================================================
+# SIP Insight Lab — Python Dependencies
+# =============================================================================
+
+# Core
+python-dotenv>=1.0.0        # .env file loading
+pyyaml>=6.0.1               # YAML config / taxonomy
+pydantic>=2.5.0             # Data validation and JSON schema enforcement
+uuid>=1.30                  # UUID generation (stdlib, listed for clarity)
+
+# Database
+# sqlite3 is stdlib; listed below is for PostgreSQL support if needed
+# psycopg2-binary>=2.9.9
+
+# LLM APIs
+openai>=1.12.0              # OpenAI GPT-4 / GPT-4o
+google-generativeai>=0.4.0  # Google Gemini
+groq>=0.9.0                 # Groq Cloud API
+
+# Data Collection
+praw>=7.7.1                 # Reddit API
+google-api-python-client>=2.115.0  # YouTube Data API v3
+requests>=2.31.0            # HTTP scraping (App Store, TradingQ&A)
+beautifulsoup4>=4.12.3      # HTML parsing for scrapers
+lxml>=5.1.0                 # Fast HTML parser backend for BeautifulSoup
+google-play-scraper>=1.2.4  # Google Play Store reviews scraper
+apify-client>=1.6.0         # Apify client for web scraping
+
+# NLP / Cleaning
+spacy>=3.7.2                # NER for PII detection
+# Run after install: python -m spacy download en_core_web_trf
+langdetect>=1.0.9           # Language detection
+
+# QA / ML Metrics
+scikit-learn>=1.4.0         # F1, precision, recall, confusion matrix
+numpy>=1.26.0               # Numerical operations
+
+# Utilities
+tqdm>=4.66.2                # Progress bars for batch operations
+tenacity>=8.2.3             # Retry logic with exponential backoff
+# Web API / Serverless (Vercel)
+fastapi>=0.110.0
+uvicorn>=0.28.0
+
+# Output / Dashboard (Phase 5)
+streamlit>=1.31.0
+pandas>=2.2.0
+plotly>=5.19.0

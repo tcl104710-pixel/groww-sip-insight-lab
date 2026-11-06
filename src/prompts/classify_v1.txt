@@ -1,0 +1,54 @@
+You are a research assistant for the Growth and Retention product team at Groww, a leading Indian investment platform.
+Your task is to classify the following retail investor feedback item using ONLY the labels provided in the Research Taxonomy below.
+Return a single, strictly valid JSON object matching the Output Schema exactly. Do NOT include markdown code blocks, backticks, or any conversational preamble/postscript.
+
+## Research Taxonomy
+{taxonomy_context}
+
+## Few-Shot Reference Examples
+{few_shot_examples}
+
+## Feedback Item to Classify
+Source: {source}
+Star Rating: {star_rating}
+Text: "{cleaned_text}"
+
+## Output Schema
+{
+  "lifecycle_stage": "<LS-00 | LS-01 | LS-02 | LS-03 | LS-04 | LS-99>",
+  "stated_intent": "<continue | pause | stop | neutral | unknown>",
+  "actual_action": "<active | paused | cancelled | unknown>",
+  "stop_type": "<ST-01 | ST-02 | ST-03 | ST-99>",
+  "root_cause": "<RC-01 | RC-02 | RC-03 | RC-04 | RC-05 | RC-06 | RC-07 | RC-99>",
+  "root_cause_sub": "<subcategory label or null>",
+  "trigger_moment": "<string describing triggering incident or null>",
+  "help_sources": ["<reddit | youtube | tradingqa | peer_friend | financial_advisor | groww_customer_support | google_search | other | none_mentioned>"],
+  "retention_factor": "<RF-01 | RF-02 | RF-03 | RF-04 | RF-05 | RF-06 | RF-07 | RF-99 | null>",
+  "investor_segment": {
+    "age_group": "<18-24 | 25-30 | 31-40 | 41-50 | 51+ | unknown>",
+    "income_stability": "<salaried_stable | salaried_variable | self_employed | student | unknown>",
+    "money_source": "<own_savings | salary_emi | gift_windfall | borrowed | unknown>",
+    "influencer_type": "<finfluencer_youtube | finfluencer_instagram | finfluencer_twitter_x | peer_friend | family | financial_advisor | self_research | unknown>"
+  },
+  "sentiment_score": <float between -1.0 and 1.0>,
+  "confidence_score": <float between 0.0 and 1.0>,
+  "field_confidences": {
+    "lifecycle_stage": <float 0.0 to 1.0>,
+    "stated_intent": <float 0.0 to 1.0>,
+    "actual_action": <float 0.0 to 1.0>,
+    "stop_type": <float 0.0 to 1.0>,
+    "root_cause": <float 0.0 to 1.0>
+  }
+}
+
+CRITICAL RULES:
+1. SEPARATION OF INTENT AND ACTION: Record `stated_intent` and `actual_action` as completely SEPARATE fields.
+   - `stated_intent` reflects what the investor SAYS or expresses willingness to do.
+   - `actual_action` reflects what the investor has ACTUALLY done (e.g. SIP is active, paused, cancelled).
+   - NEVER infer `actual_action` solely from `stated_intent`. If an investor says "I feel like stopping", stated_intent is "stop", but if the SIP is still debiting, actual_action is "active". If unclear, use "unknown".
+2. STOP TYPE:
+   - ST-01 (involuntary_lapse) applies when debits failed, bank mandates rejected, or system auto-cancelled without investor opting in.
+   - ST-02 (deliberate_exit) applies when user intentionally paused or cancelled.
+   - ST-03 (not_applicable) applies when user has NOT stopped (active / continuing).
+3. RETENTION FACTOR: Only populate if the investor is continuing (actual_action is 'active' or stated_intent is 'continue'). For churned investors, set to null.
+4. Output must be raw JSON parseable by json.loads().

@@ -25,7 +25,8 @@ try:
 except Exception:
     pass
 
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Response
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -128,6 +129,41 @@ def get_bundled_data() -> Dict[str, Any]:
 
 class AskRequest(BaseModel):
     query: str
+
+
+# -----------------------------------------------------------------------------
+# ROOT & FRONTEND SPA ENDPOINTS
+# -----------------------------------------------------------------------------
+
+@app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
+def serve_index_html():
+    """Serves the SIP Insight Lab frontend SPA directly from the lambda."""
+    for p in [
+        CURRENT_DIR / "public" / "index.html",
+        PROJECT_ROOT / "public" / "index.html",
+        Path.cwd() / "public" / "index.html",
+        Path("/var/task/public/index.html"),
+        Path("/var/task/api/public/index.html"),
+    ]:
+        if p.exists():
+            return HTMLResponse(content=p.read_text(encoding="utf-8"))
+    return HTMLResponse("<h1>SIP Insight Lab Discovery Engine</h1><p>API online at <a href='/api/health'>/api/health</a></p>")
+
+
+@app.get("/app.js")
+def serve_app_js():
+    """Serves app.js directly from the lambda."""
+    for p in [
+        CURRENT_DIR / "public" / "app.js",
+        PROJECT_ROOT / "public" / "app.js",
+        Path.cwd() / "public" / "app.js",
+        Path("/var/task/public/app.js"),
+        Path("/var/task/api/public/app.js"),
+    ]:
+        if p.exists():
+            return Response(content=p.read_text(encoding="utf-8"), media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="app.js not found")
 
 
 # -----------------------------------------------------------------------------

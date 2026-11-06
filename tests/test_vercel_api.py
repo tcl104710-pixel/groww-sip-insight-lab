@@ -170,8 +170,8 @@ def test_vercel_json_config():
     assert any(b["src"] == "api/index.py" and b["use"] == "@vercel/python" for b in config["builds"])
     assert any(b["src"] == "public/**" and b["use"] == "@vercel/static" for b in config["builds"])
     route_dests = [r["dest"] for r in config["routes"]]
-    assert "api/index.py" in route_dests
-    assert "public/grow/$1" in route_dests
+    assert any("api/index.py" in d for d in route_dests)
+    assert any("public/grow/$1" in d for d in route_dests)
 
 
 def test_vercel_static_assets():

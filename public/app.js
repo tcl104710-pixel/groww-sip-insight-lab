@@ -794,12 +794,6 @@ function resetFilters() {
   renderProblemExplorer();
 }
 
-  AppState.filteredRecords = [...AppState.allRecords];
-  AppState.currentPage = 1;
-  renderEvidenceTable();
-  renderProblemExplorer();
-}
-
 function exportCSV() {
   const records = AppState.filteredRecords.length > 0 ? AppState.filteredRecords : AppState.allRecords;
   if (!records.length) return;

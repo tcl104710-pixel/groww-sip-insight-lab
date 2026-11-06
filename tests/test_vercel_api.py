@@ -236,3 +236,23 @@ def test_vercel_api_data_sync():
     assert api_json.exists(), "api/data/research_data.json missing for serverless packaging"
     assert pub_json.exists(), "public/data/research_data.json missing for edge static CDN"
     assert api_json.stat().st_size == pub_json.stat().st_size
+
+
+def test_records_limit_2000():
+    res = get_records(limit=2000)
+    assert res["total"] >= 1000
+    assert len(res["records"]) >= 1000
+
+
+def test_serve_grow_image():
+    from api.index import serve_grow_image
+    res = serve_grow_image("1_overview.png")
+    assert res.media_type == "image/png"
+    assert len(res.body) > 500_000
+
+
+def test_serve_data_file():
+    from api.index import serve_data_file
+    res = serve_data_file("research_data.json")
+    assert res.media_type == "application/json"
+    assert len(res.body) > 1_000_000

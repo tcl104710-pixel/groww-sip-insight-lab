@@ -166,6 +166,70 @@ def serve_app_js():
     raise HTTPException(status_code=404, detail="app.js not found")
 
 
+@app.get("/grow/{filename}")
+def serve_grow_image(filename: str):
+    """Serves visual canvas images from api/grow or project grow directories."""
+    safe_name = Path(filename).name
+    candidates = [
+        CURRENT_DIR / "grow" / safe_name,
+        CURRENT_DIR / "public" / "grow" / safe_name,
+        PROJECT_ROOT / "grow" / safe_name,
+        PROJECT_ROOT / "public" / "grow" / safe_name,
+        Path.cwd() / "grow" / safe_name,
+        Path.cwd() / "public" / "grow" / safe_name,
+        Path("/var/task/grow") / safe_name,
+        Path("/var/task/api/grow") / safe_name,
+        Path("/var/task/public/grow") / safe_name,
+    ]
+    for p in candidates:
+        if p.exists() and p.is_file():
+            return Response(content=p.read_bytes(), media_type="image/png")
+    raise HTTPException(status_code=404, detail=f"Image {safe_name} not found")
+
+
+@app.get("/data/{filename}")
+def serve_data_file(filename: str):
+    """Serves static data files like research_data.json."""
+    safe_name = Path(filename).name
+    candidates = [
+        CURRENT_DIR / "data" / safe_name,
+        CURRENT_DIR / "public" / "data" / safe_name,
+        PROJECT_ROOT / "data" / safe_name,
+        PROJECT_ROOT / "public" / "data" / safe_name,
+        Path.cwd() / "data" / safe_name,
+        Path.cwd() / "public" / "data" / safe_name,
+        Path("/var/task/data") / safe_name,
+        Path("/var/task/api/data") / safe_name,
+        Path("/var/task/public/data") / safe_name,
+    ]
+    for p in candidates:
+        if p.exists() and p.is_file():
+            media_type = "application/json" if safe_name.endswith(".json") else "text/plain"
+            return Response(content=p.read_bytes(), media_type=media_type)
+    raise HTTPException(status_code=404, detail=f"File {safe_name} not found")
+
+
+@app.get("/{filename}.csv")
+@app.get("/{filename}.md")
+def serve_deliverable(filename: str):
+    """Serves downloadable deliverables from root or public."""
+    safe_name = Path(filename).name
+    for ext in [".csv", ".md"]:
+        candidates = [
+            CURRENT_DIR / f"{safe_name}{ext}",
+            PROJECT_ROOT / f"{safe_name}{ext}",
+            PROJECT_ROOT / "public" / f"{safe_name}{ext}",
+            Path.cwd() / f"{safe_name}{ext}",
+            Path("/var/task") / f"{safe_name}{ext}",
+            Path("/var/task/public") / f"{safe_name}{ext}",
+        ]
+        for p in candidates:
+            if p.exists() and p.is_file():
+                media_type = "text/csv" if ext == ".csv" else "text/markdown"
+                return Response(content=p.read_bytes(), media_type=media_type)
+    raise HTTPException(status_code=404, detail=f"Deliverable {safe_name} not found")
+
+
 # -----------------------------------------------------------------------------
 # REST ENDPOINTS
 # -----------------------------------------------------------------------------
@@ -225,7 +289,7 @@ def get_records(
     sentiment: Optional[str] = None,
     stage: Optional[str] = None,
     behaviour: Optional[str] = None,
-    limit: int = Query(default=100, ge=1, le=500),
+    limit: int = Query(default=100, ge=1, le=5000),
     offset: int = Query(default=0, ge=0),
 ):
     data = get_bundled_data()

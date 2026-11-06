@@ -506,16 +506,23 @@ function renderPillList(containerId, countsObj, total) {
 function renderEvidenceTable() {
   const tbody = document.getElementById('evidenceTableBody');
   const countBadge = document.getElementById('filterCountBadge');
+  const countText = document.getElementById('filterCountText');
   const emptyState = document.getElementById('emptyState');
+  const paginationInfo = document.getElementById('paginationInfo');
+  const paginationControls = document.getElementById('paginationControls');
 
   const filtered = AppState.filteredRecords;
-  if (countBadge) {
-    countBadge.textContent = `Showing: ${filtered.length} / ${AppState.allRecords.length} records`;
-  }
+  const total = AppState.allRecords.length;
+  const countMsg = `Showing: ${filtered.length.toLocaleString()} / ${total.toLocaleString()} records`;
+
+  if (countText) countText.textContent = countMsg;
+  else if (countBadge) countBadge.textContent = countMsg;
 
   if (filtered.length === 0) {
     if (tbody) tbody.innerHTML = '';
     if (emptyState) emptyState.classList.remove('hidden');
+    if (paginationInfo) paginationInfo.textContent = '0 records';
+    if (paginationControls) paginationControls.innerHTML = '';
     return;
   } else {
     if (emptyState) emptyState.classList.add('hidden');
@@ -523,8 +530,69 @@ function renderEvidenceTable() {
 
   if (!tbody) return;
 
-  const startIndex = (AppState.currentPage - 1) * AppState.pageSize;
-  const paginated = filtered.slice(startIndex, startIndex + AppState.pageSize);
+  const pageSize = AppState.pageSize === 'all' ? filtered.length : parseInt(AppState.pageSize, 10);
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+  if (AppState.currentPage > totalPages) AppState.currentPage = totalPages;
+  if (AppState.currentPage < 1) AppState.currentPage = 1;
+
+  const startIndex = (AppState.currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, filtered.length);
+  const paginated = filtered.slice(startIndex, endIndex);
+
+  if (paginationInfo) {
+    paginationInfo.textContent = `Showing ${(startIndex + 1).toLocaleString()} to ${endIndex.toLocaleString()} of ${filtered.length.toLocaleString()} records`;
+  }
+
+  // Render pagination controls
+  if (paginationControls) {
+    if (totalPages <= 1) {
+      paginationControls.innerHTML = '';
+    } else {
+      let btns = [];
+      // Prev Button
+      btns.push(`
+        <button onclick="changePage(${AppState.currentPage - 1})" ${AppState.currentPage === 1 ? 'disabled class="px-2 py-1 text-slate-300 cursor-not-allowed"' : 'class="px-2 py-1 text-slate-700 hover:bg-slate-100 rounded"'} title="Previous page">
+          ‹ Prev
+        </button>
+      `);
+
+      // Page numbers (smart window)
+      const maxButtons = 5;
+      let startP = Math.max(1, AppState.currentPage - 2);
+      let endP = Math.min(totalPages, startP + maxButtons - 1);
+      if (endP - startP < maxButtons - 1) {
+        startP = Math.max(1, endP - maxButtons + 1);
+      }
+
+      if (startP > 1) {
+        btns.push(`<button onclick="changePage(1)" class="px-2.5 py-1 rounded text-slate-600 hover:bg-slate-100">1</button>`);
+        if (startP > 2) btns.push(`<span class="px-1 text-slate-400">…</span>`);
+      }
+
+      for (let p = startP; p <= endP; p++) {
+        const isActive = p === AppState.currentPage;
+        btns.push(`
+          <button onclick="changePage(${p})" class="px-2.5 py-1 rounded font-bold text-xs ${isActive ? 'bg-brand-600 text-white' : 'text-slate-700 hover:bg-slate-100'}">
+            ${p}
+          </button>
+        `);
+      }
+
+      if (endP < totalPages) {
+        if (endP < totalPages - 1) btns.push(`<span class="px-1 text-slate-400">…</span>`);
+        btns.push(`<button onclick="changePage(${totalPages})" class="px-2.5 py-1 rounded text-slate-600 hover:bg-slate-100">${totalPages}</button>`);
+      }
+
+      // Next Button
+      btns.push(`
+        <button onclick="changePage(${AppState.currentPage + 1})" ${AppState.currentPage === totalPages ? 'disabled class="px-2 py-1 text-slate-300 cursor-not-allowed"' : 'class="px-2 py-1 text-slate-700 hover:bg-slate-100 rounded"'} title="Next page">
+          Next ›
+        </button>
+      `);
+
+      paginationControls.innerHTML = btns.join('');
+    }
+  }
 
   tbody.innerHTML = paginated.map(r => {
     const quote = (r.evidence_quote || r.cleaned_text || '').replace(/"/g, '&quot;');
@@ -559,6 +627,19 @@ function renderEvidenceTable() {
   }).join('');
 }
 
+function changePage(newPage) {
+  AppState.currentPage = newPage;
+  renderEvidenceTable();
+  const table = document.getElementById('evidenceTableBody');
+  if (table) table.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function changePageSize(newSize) {
+  AppState.pageSize = newSize === 'all' ? 'all' : parseInt(newSize, 10);
+  AppState.currentPage = 1;
+  renderEvidenceTable();
+}
+
 // -----------------------------------------------------------------------------
 // Filters & Search
 // -----------------------------------------------------------------------------
@@ -566,11 +647,92 @@ function renderEvidenceTable() {
 function debounceSearch() {
   clearTimeout(AppState.searchDebounceTimer);
   AppState.searchDebounceTimer = setTimeout(() => {
-    applyFilters();
-  }, 250);
+    applyFilters(false);
+    renderSearchDropdown();
+  }, 150);
 }
 
-function applyFilters() {
+function handleSearchKeyDown(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    closeSearchDropdown();
+    applyFilters(true);
+    switchTab('evidenceExplorer');
+    const tableEl = document.getElementById('evidenceTableBody');
+    if (tableEl) tableEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if (e.key === 'Escape') {
+    closeSearchDropdown();
+  }
+}
+
+function closeSearchDropdown() {
+  const dropdown = document.getElementById('searchDropdown');
+  if (dropdown) dropdown.classList.add('hidden');
+}
+
+function renderSearchDropdown() {
+  const dropdown = document.getElementById('searchDropdown');
+  const query = (document.getElementById('globalSearchInput')?.value || '').trim();
+  if (!dropdown) return;
+
+  if (!query) {
+    dropdown.classList.add('hidden');
+    dropdown.innerHTML = '';
+    return;
+  }
+
+  const matches = AppState.filteredRecords.slice(0, 5);
+  const totalMatches = AppState.filteredRecords.length;
+
+  if (totalMatches === 0) {
+    dropdown.innerHTML = `
+      <div class="p-4 text-center text-xs text-slate-500">
+        No records found matching "<span class="font-bold text-slate-700">${escapeHtml(query)}</span>"
+      </div>
+    `;
+    dropdown.classList.remove('hidden');
+    return;
+  }
+
+  const itemsHtml = matches.map(r => {
+    const quote = (r.evidence_quote || r.cleaned_text || '').replace(/"/g, '&quot;');
+    const truncatedQuote = quote.length > 90 ? quote.slice(0, 90) + '…' : quote;
+    const sourceClass = ChartColors.sources[r.source_display] || '#64748b';
+
+    return `
+      <div onclick="openRecordModal('${r.record_id}'); closeSearchDropdown();" class="p-3 hover:bg-slate-50 cursor-pointer transition flex flex-col gap-1">
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="font-mono font-bold text-brand-700">${r.record_id}</span>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold text-white" style="background-color: ${sourceClass}">
+              ${r.source_display || r.source}
+            </span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-medium">${r.problem_theme || ''}</span>
+        </div>
+        <p class="text-xs text-slate-700 italic leading-snug">"${truncatedQuote}"</p>
+      </div>
+    `;
+  }).join('');
+
+  dropdown.innerHTML = `
+    <div class="p-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500">
+      <span>TOP MATCHES (${totalMatches.toLocaleString()} total)</span>
+      <span class="text-slate-400 text-[10px]">Press Enter to view all</span>
+    </div>
+    ${itemsHtml}
+    <div class="p-2 bg-slate-50 border-t border-slate-100 text-center">
+      <button onclick="switchTab('evidenceExplorer'); closeSearchDropdown();" class="w-full py-1 text-xs font-bold text-brand-600 hover:text-brand-800 transition flex items-center justify-center gap-1">
+        <span>View all ${totalMatches.toLocaleString()} records in Evidence Explorer</span>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  `;
+  dropdown.classList.remove('hidden');
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function applyFilters(autoSwitch = false) {
   const query = (document.getElementById('globalSearchInput')?.value || '').trim().toLowerCase();
   const source = document.getElementById('sourceSelect')?.value || '';
   const theme = document.getElementById('themeSelect')?.value || '';
@@ -606,6 +768,12 @@ function applyFilters() {
   AppState.currentPage = 1;
   renderEvidenceTable();
   renderProblemExplorer();
+
+  if (autoSwitch && (query || source || theme || sentiment)) {
+    if (AppState.activeTab !== 'evidenceExplorer') {
+      switchTab('evidenceExplorer');
+    }
+  }
 }
 
 function resetFilters() {
@@ -618,6 +786,13 @@ function resetFilters() {
   if (sourceSel) sourceSel.value = '';
   if (themeSel) themeSel.value = '';
   if (sentSel) sentSel.value = '';
+
+  closeSearchDropdown();
+  AppState.filteredRecords = [...AppState.allRecords];
+  AppState.currentPage = 1;
+  renderEvidenceTable();
+  renderProblemExplorer();
+}
 
   AppState.filteredRecords = [...AppState.allRecords];
   AppState.currentPage = 1;
@@ -1218,4 +1393,24 @@ function toggleAccordion(id) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('hidden');
 }
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Global click-outside listener to dismiss search dropdown
+document.addEventListener('click', (e) => {
+  const dropdown = document.getElementById('searchDropdown');
+  const searchInput = document.getElementById('globalSearchInput');
+  if (dropdown && !dropdown.contains(e.target) && e.target !== searchInput) {
+    closeSearchDropdown();
+  }
+});
+
 

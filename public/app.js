@@ -215,11 +215,11 @@ function renderKPIs() {
   if (!grid) return;
 
   const stats = AppState.stats || {};
-  const totalRaw = stats.total_raw || 1065;
-  const totalCleaned = stats.total_cleaned || 696;
-  const totalRelevant = stats.total_relevant || 269;
-  const totalClassified = stats.total_classified || 269;
-  const noisePct = stats.noise_filtered_pct || 34.6;
+  const totalRaw = stats.total_raw || 4983;
+  const totalCleaned = stats.total_cleaned || 3726;
+  const totalRelevant = stats.total_relevant || 1029;
+  const totalClassified = stats.total_classified || 1029;
+  const noisePct = stats.noise_filtered_pct || 25.2;
 
   const kpis = [
     { label: 'Raw Collected', value: totalRaw.toLocaleString(), sub: '4 Public Sources', icon: 'database', color: 'text-slate-700' },
@@ -227,7 +227,7 @@ function renderKPIs() {
     { label: 'Relevant SIP', value: totalRelevant.toLocaleString(), sub: 'Empirical Focus', icon: 'filter', color: 'text-indigo-600' },
     { label: 'AI Classified', value: totalClassified.toLocaleString(), sub: '100% LLM Tagged', icon: 'shield-check', color: 'text-emerald-600' },
     { label: 'Recurring Insights', value: '7', sub: 'High-Impact Themes', icon: 'lightbulb', color: 'text-amber-600' },
-    { label: 'P0/P1 Actions', value: '4', sub: 'Critical Opportunities', icon: 'target', color: 'text-rose-600' }
+    { label: 'Prioritized Actions', value: '4', sub: 'Brief-Compliant Initiatives', icon: 'target', color: 'text-rose-600' }
   ];
 
   grid.innerHTML = kpis.map(k => `
@@ -252,12 +252,50 @@ function renderAccountingTable() {
   const tbody = document.getElementById('accountingTableBody');
   if (!tbody) return;
 
+  const stats = AppState.stats || {};
+  const totalRaw = stats.total_raw || 4983;
+  const totalCleaned = stats.total_cleaned || 3726;
+  const totalRelevant = stats.total_relevant || 1029;
+  const totalClassified = stats.total_classified || 1029;
+  const noisePct = stats.noise_filtered_pct || 25.2;
+  const rawCounts = stats.raw_counts || {
+    'Google Play Store': 3000,
+    'YouTube': 1634,
+    'Reddit': 256,
+    'Apple App Store': 93
+  };
+
   const rows = [
-    { stage: '1. Raw Platform Extraction', count: '1,065', share: '100.0%', desc: 'Play Store (600), App Store (100), Reddit (174), YouTube (191)' },
-    { stage: '2. De-duplication & Cleaning', count: '696', share: '65.4%', desc: '369 records removed (16 exact duplicates, 353 noise/spam/generic)' },
-    { stage: '3. SIP Relevance Filtering', count: '269', share: '25.3%', desc: '427 non-SIP equity/F&O records partitioned out; zero SIP loss' },
-    { stage: '4. Multi-Dimensional AI Classification', count: '269', share: '100.0%', desc: '100% classified across journey stage, problem theme, sentiment, behaviour' },
-    { stage: '5. Verifiable Evidence Audit', count: '269', share: '100.0%', desc: '100% trace to exact public review/post ID, verbatim quote, and rating' },
+    {
+      stage: '1. Raw Platform Extraction',
+      count: totalRaw.toLocaleString(),
+      share: '100.0%',
+      desc: `Google Play Store (${(rawCounts['Google Play Store'] || 3000).toLocaleString()}), YouTube (${(rawCounts['YouTube'] || 1634).toLocaleString()}), Reddit (${(rawCounts['Reddit'] || 256).toLocaleString()}), Apple App Store (${(rawCounts['Apple App Store'] || 93).toLocaleString()})`
+    },
+    {
+      stage: '2. De-duplication & Cleaning',
+      count: totalCleaned.toLocaleString(),
+      share: `${((totalCleaned / totalRaw) * 100).toFixed(1)}%`,
+      desc: `${(totalRaw - totalCleaned).toLocaleString()} noise/spam/generic records removed (${noisePct}% filtered); zero PII`
+    },
+    {
+      stage: '3. SIP Relevance Filtering',
+      count: totalRelevant.toLocaleString(),
+      share: `${((totalRelevant / totalCleaned) * 100).toFixed(1)}%`,
+      desc: `${(totalCleaned - totalRelevant).toLocaleString()} non-SIP equity/F&O records partitioned out; zero SIP loss`
+    },
+    {
+      stage: '4. Multi-Dimensional AI Classification',
+      count: totalClassified.toLocaleString(),
+      share: '100.0%',
+      desc: '100% classified across journey stage, problem theme, sentiment, user behaviour'
+    },
+    {
+      stage: '5. Verifiable Evidence Audit',
+      count: totalClassified.toLocaleString(),
+      share: '100.0%',
+      desc: '100% trace to exact public review/post ID, verbatim quote, rating, date, and URL'
+    },
   ];
 
   tbody.innerHTML = rows.map(r => `
@@ -271,13 +309,19 @@ function renderAccountingTable() {
 }
 
 function renderOverviewCharts() {
+  const stats = AppState.stats || {};
+  const totalRaw = stats.total_raw || 4983;
+  const totalCleaned = stats.total_cleaned || 3726;
+  const totalRelevant = stats.total_relevant || 1029;
+  const totalClassified = stats.total_classified || 1029;
+
   // Funnel Chart
   const funnelEl = document.getElementById('chart-funnel');
   if (funnelEl) {
     const funnelData = [{
       type: 'funnel',
       y: ['1. Raw Platform Ingested', '2. Cleaned Corpus', '3. SIP Relevant Records', '4. AI Classified Corpus'],
-      x: [1065, 696, 269, 269],
+      x: [totalRaw, totalCleaned, totalRelevant, totalClassified],
       textinfo: 'value+percent initial',
       marker: {
         color: ['#3b82f6', '#60a5fa', '#00d09c', '#10b981']
@@ -295,11 +339,11 @@ function renderOverviewCharts() {
   // Source Distribution Donut
   const pieEl = document.getElementById('chart-source-pie');
   if (pieEl) {
-    const breakdown = (AppState.stats && AppState.stats.source_classified_breakdown) || {
-      'Reddit': 161,
-      'YouTube': 72,
-      'Apple App Store': 21,
-      'Google Play Store': 15
+    const breakdown = stats.source_classified_breakdown || {
+      'YouTube': 460,
+      'Google Play Store': 309,
+      'Reddit': 239,
+      'Apple App Store': 21
     };
 
     const pieData = [{
@@ -308,7 +352,7 @@ function renderOverviewCharts() {
       type: 'pie',
       hole: 0.55,
       marker: {
-        colors: ['#ff4500', '#ef4444', '#0070c9', '#00875a']
+        colors: Object.keys(breakdown).map(s => ChartColors.sources[s] || '#64748b')
       },
       textinfo: 'label+percent',
       textposition: 'outside',
@@ -508,8 +552,8 @@ function renderPillList(containerId, countsObj, total) {
       <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-100">
         <span class="font-medium text-slate-800 capitalize truncate pr-2">${label}</span>
         <div class="flex items-center gap-2 shrink-0">
-          <span class="font-mono font-bold text-slate-900">${count}</span>
-          <span class="text-[10px] text-slate-400">(${pct}%)</span>
+          <span class="font-mono font-bold text-slate-900">${count} of ${total}</span>
+          <span class="text-[10px] text-slate-500 font-semibold">(${pct}%)</span>
         </div>
       </div>
     `;
@@ -857,7 +901,7 @@ function renderInsights() {
             <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${badgeClass}">
               ${ins.severity} Severity · ${ins.category}
             </span>
-            <span class="text-xs font-mono font-bold text-brand-600">${ins.count} Records (${ins.pct}%)</span>
+            <span class="text-xs font-mono font-bold text-brand-600">${ins.count} of 1,029 records (${ins.pct}%)</span>
           </div>
           <h4 class="text-sm font-bold text-slate-900 mb-2 leading-snug">${ins.title}</h4>
           <p class="text-xs text-slate-600 mb-3">${ins.description}</p>
@@ -925,21 +969,22 @@ function renderOpportunities() {
   const oppChartEl = document.getElementById('chart-opp-matrix');
   if (oppChartEl) {
     const traces = opps.map(op => {
-      const color = op.priority_tier === 'P0' ? '#ef4444' : op.priority_tier === 'P1' ? '#f59e0b' : '#3b82f6';
+      const color = (op.priority_tier || '').includes('P0') ? '#ef4444' : (op.priority_tier || '').includes('P1') ? '#f59e0b' : '#3b82f6';
       return {
         x: [op.frequency_score],
         y: [op.severity_score],
         mode: 'markers+text',
         name: op.opportunity_name,
-        text: [op.priority_tier],
+        text: [(op.priority_tier || '').split(' ')[0]],
         textposition: 'middle center',
+        textfont: { color: '#ffffff', family: 'inherit', size: 10, weight: 'bold' },
         marker: {
-          size: [op.opportunity_score * 7],
+          size: [op.opportunity_score * 4.5],
           color: color,
-          opacity: 0.85,
-          line: { width: 1.5, color: '#ffffff' }
+          opacity: 0.9,
+          line: { width: 2, color: '#ffffff' }
         },
-        hovertemplate: `<b>${op.opportunity_name}</b><br>Tier: ${op.priority_tier}<br>Score: ${op.opportunity_score}<br>Freq: ${op.frequency_count} records<extra></extra>`
+        hovertemplate: `<b>${op.opportunity_name}</b><br>Priority: ${op.priority_tier}<br>Score: <b>${op.opportunity_score} / 10</b><br>Frequency: ${op.frequency_count} of 1,029 records (${op.frequency_score}/10)<br>Severity: ${op.severity_score} / 10<br>Impact: ${op.user_impact_score} / 10<extra></extra>`
       };
     });
 
@@ -947,8 +992,8 @@ function renderOpportunities() {
       margin: { l: 50, r: 20, t: 20, b: 50 },
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
-      xaxis: { title: 'Frequency Score (0 - 10)', range: [0, 11] },
-      yaxis: { title: 'Severity Score (0 - 10)', range: [0, 11] },
+      xaxis: { title: 'Frequency Score (0 - 10)', range: [0, 10.5], gridcolor: '#f1f5f9' },
+      yaxis: { title: 'Severity Score (0 - 10)', range: [0, 10.5], gridcolor: '#f1f5f9' },
       showlegend: false,
       font: { family: 'inherit', size: 10 }
     };
@@ -959,18 +1004,20 @@ function renderOpportunities() {
   const cardsList = document.getElementById('opportunityCardsList');
   if (cardsList) {
     cardsList.innerHTML = opps.map(op => {
-      const tierBadge = op.priority_tier === 'P0' ? 'badge-p0' : op.priority_tier === 'P1' ? 'badge-p1' : 'badge-p2';
+      const tierBadge = (op.priority_tier || '').includes('P0') ? 'badge-p0' : (op.priority_tier || '').includes('P1') ? 'badge-p1' : 'badge-p2';
       return `
         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs">
           <div class="flex items-center justify-between mb-1.5">
-            <span class="px-2 py-0.5 rounded font-bold uppercase tracking-wider ${tierBadge}">${op.priority_tier} Priority</span>
+            <span class="px-2 py-0.5 rounded font-bold uppercase tracking-wider ${tierBadge}">${op.priority_tier}</span>
             <span class="font-mono font-bold text-slate-800">Score: ${op.opportunity_score} / 10</span>
           </div>
           <h4 class="font-bold text-slate-900 mb-1">${op.opportunity_name}</h4>
           <p class="text-slate-600 mb-2">${op.product_recommendation}</p>
-          <div class="flex items-center gap-3 text-[11px] text-slate-400 font-mono">
-            <span>Frequency: ${op.frequency_count}</span>
+          <div class="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 font-mono">
+            <span>Frequency: ${op.frequency_count} of 1,029</span>
+            <span>Severity: ${op.severity_score}/10</span>
             <span>Impact: ${op.user_impact_score}/10</span>
+            <span>Addressability: ${op.addressability_score}/10</span>
           </div>
         </div>
       `;
@@ -1285,7 +1332,7 @@ function renderDiscoveryChain() {
             <h4 class="font-bold text-sm text-slate-900">${item.opportunity_name}</h4>
           </div>
           <div class="text-xs font-mono font-bold text-brand-700">
-            Score: ${score} / 10 · Freq: ${item.frequency_count || 0} records
+            Score: ${score} / 10 · Freq: ${item.frequency_count || 0} of 1,029 records
           </div>
         </div>
 

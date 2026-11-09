@@ -118,7 +118,16 @@ def get_bundled_data() -> Dict[str, Any]:
         return _CACHED_DATA
     except Exception as e:
         return {
-            "stats": {"total_raw": 1065, "total_cleaned": 696, "total_relevant": 269, "total_classified": 269},
+            "stats": {
+                "total_raw": 4983,
+                "total_cleaned": 3726,
+                "total_relevant": 1029,
+                "total_classified": 1029,
+                "relevance_rate_pct": 27.6,
+                "noise_filtered_pct": 25.2,
+                "raw_counts": {"Google Play Store": 3000, "YouTube": 1634, "Reddit": 256, "Apple App Store": 93},
+                "source_classified_breakdown": {"YouTube": 460, "Google Play Store": 309, "Reddit": 239, "Apple App Store": 21}
+            },
             "records": [],
             "cross_source": {"summary": [], "theme_crosstab": {}, "sentiment_crosstab": {}},
             "insights": [],

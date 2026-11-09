@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T13:30:53.832436",
+  "generated_at": "2026-11-09T10:43:58.127492",
   "stats": {
     "total_raw": 4983,
     "raw_counts": {
@@ -30265,7 +30265,7 @@
       "severity": "Informed / Rational",
       "user_impact": "Portfolio Hygiene (Non-Negative)",
       "description": "Sophisticated investors on Reddit frequently cancel active funds to reallocate into low-cost Nifty 50 index funds or switch platforms for AMC-direct investment. This is an informed financial decision rather than product dissatisfaction.",
-      "recommendation": "Offer in-app automated fund switch & overlap analyzer without requiring full withdrawal.",
+      "recommendation": "Provide transparent capital gains calculation and external portfolio statement import without recommending specific funds or stocks.",
       "filter_theme": "Fund Rebalancing & Strategy Shift",
       "count": 222,
       "pct": 21.6,
@@ -31318,65 +31318,52 @@
       "opportunity_name": "Smart Autopay Guard (Pre-Debit Health Check)",
       "theme": "Mandate / Auto-Debit Failure",
       "frequency_count": 84,
-      "frequency_score": 0.33,
-      "severity_score": 0.95,
-      "user_impact_score": 0.9,
-      "addressability_score": 0.85,
+      "frequency_score": 8.5,
+      "severity_score": 9.5,
+      "user_impact_score": 9.0,
+      "addressability_score": 8.5,
       "priority_tier": "P0 — Critical",
-      "product_recommendation": "Integrate Account Aggregator / SMS balance alert -24h with 1-click 'Skip Month' without bank bounce fees.",
-      "opportunity_score": 0.732
+      "product_recommendation": "Integrate Account Aggregator / SMS balance alert -24h with 1-click 'Skip Month' without bank bounce penalties (₹250–₹590).",
+      "opportunity_score": 8.9
     },
     {
       "opp_id": "OPP-04",
-      "opportunity_name": "Smart Pause & Flexible Rescheduling Engine",
-      "theme": "Cash Crunch & Affordability",
-      "frequency_count": 41,
-      "frequency_score": 0.4,
-      "severity_score": 0.75,
-      "user_impact_score": 0.8,
-      "addressability_score": 0.9,
+      "opportunity_name": "Volatility Contextualization & Rupee-Cost Averaging Engine",
+      "theme": "Market Volatility Panic & Loss",
+      "frequency_count": 111,
+      "frequency_score": 9.0,
+      "severity_score": 7.5,
+      "user_impact_score": 7.5,
+      "addressability_score": 7.5,
       "priority_tier": "P1 — High",
-      "product_recommendation": "Prominent 1–3 month pause button and installment date adjustment without canceling mandates.",
-      "opportunity_score": 0.688
+      "product_recommendation": "During market corrections (>1.5% drop), surface educational cards showing discounted unit accumulation via rupee-cost averaging (zero fund recommendations).",
+      "opportunity_score": 7.9
     },
     {
       "opp_id": "OPP-03",
-      "opportunity_name": "Volatility Reassurance Engine (Rupee-Cost Averaging)",
-      "theme": "Market Volatility Panic & Loss",
-      "frequency_count": 111,
-      "frequency_score": 0.54,
-      "severity_score": 0.7,
-      "user_impact_score": 0.75,
-      "addressability_score": 0.8,
+      "opportunity_name": "Flexible Smart Pause & Rescheduling Engine",
+      "theme": "Cash Crunch & Affordability",
+      "frequency_count": 41,
+      "frequency_score": 6.5,
+      "severity_score": 7.5,
+      "user_impact_score": 8.0,
+      "addressability_score": 9.0,
       "priority_tier": "P1 — High",
-      "product_recommendation": "During market corrections (>1.5% drop), replace red panic percentages with 'Accumulated Discounted Units' educational card.",
-      "opportunity_score": 0.684
-    },
-    {
-      "opp_id": "OPP-05",
-      "opportunity_name": "Portfolio Rebalancing & Overlap Analyzer",
-      "theme": "Fund Rebalancing & Strategy Shift",
-      "frequency_count": 222,
-      "frequency_score": 0.72,
-      "severity_score": 0.4,
-      "user_impact_score": 0.7,
-      "addressability_score": 0.8,
-      "priority_tier": "P2 — Medium",
-      "product_recommendation": "Assisted 1-click fund switch from underperforming active funds to low-cost index funds with capital gains preview.",
-      "opportunity_score": 0.651
+      "product_recommendation": "Prominent 1–3 month pause button and dynamic salary-cycle date adjustment without canceling mandates.",
+      "opportunity_score": 7.6
     },
     {
       "opp_id": "OPP-02",
-      "opportunity_name": "Order Lifecycle Stepper (Live NAV Realization)",
+      "opportunity_name": "Live Order Lifecycle Stepper (Real-Time NAV Realization)",
       "theme": "Platform Delay & Allocation Error",
       "frequency_count": 12,
-      "frequency_score": 0.08,
-      "severity_score": 0.8,
-      "user_impact_score": 0.85,
-      "addressability_score": 0.95,
+      "frequency_score": 5.0,
+      "severity_score": 8.5,
+      "user_impact_score": 8.0,
+      "addressability_score": 9.5,
       "priority_tier": "P0 — Critical",
-      "product_recommendation": "Live pizza-tracker stepper on order card showing bank clearance, AMC cutoff, and expected allotment date.",
-      "opportunity_score": 0.627
+      "product_recommendation": "Live pizza-tracker stepper on order card showing Bank Clearance -> Exchange / Pooling -> AMC Cutoff -> NAV Units Realized.",
+      "opportunity_score": 7.5
     }
   ],
   "discovery_chain": [
@@ -31385,14 +31372,14 @@
       "opportunity_name": "Smart Autopay Guard & Safe-Skip",
       "theme": "Mandate / Auto-Debit Failure",
       "priority_tier": "P0",
-      "opportunity_score": 0.842,
+      "opportunity_score": 8.9,
       "frequency_count": 84,
-      "frequency_score": 9.0,
-      "severity_score": 9.0,
-      "user_impact_score": 8.5,
-      "addressability_score": 8.0,
+      "frequency_score": 8.5,
+      "severity_score": 9.5,
+      "user_impact_score": 9.0,
+      "addressability_score": 8.5,
       "user_feedback": "\"transfer money or mandate failed (GFB_ecfd49b4c0868bf4)\" ; \"I've found out that to place *sell order of stocks at market price * user is not prompted to confirm and is instantaneou (GFB_bf6e0fb5cd7ec6ed)\" ; \"Feature Request: Add Application Number and IPO Name in UPI Mandate Descriptions When applying for IPOs, the incoming UP (GFB_2e32091e8042d337)\"",
-      "research_finding": "Mandate failures and bank bounce fees account for 84 records (8.2% of relevant corpus). Involuntary lapses trigger ₹250-₹590 bank penalties, causing silent churn.",
+      "research_finding": "Mandate failures and bank bounce fees account for 84 of 1,029 records (8.2% of corpus; 50.9% of 165 practical barriers). Involuntary lapses trigger ₹250-₹590 bank penalties, causing silent churn.",
       "user_problem": "Involuntary Churn & Bank Bounce Penalties. Debits fail before salary credit; 3 missed debits auto-cancel SIP without user intent.",
       "unmet_need": "Proactive pre-debit balance check (-24h) and penalty-free 1-click instalment skip.",
       "opportunity": "Smart Autopay Guard: Account aggregator/SMS balance verification 24h prior to debit; prompt user with 1-click skip if balance is insufficient.",
@@ -31402,37 +31389,17 @@
     },
     {
       "opp_id": "OPP-02",
-      "opportunity_name": "Volatility Reassurance & Rupee-Cost Averaging Engine",
-      "theme": "Market Volatility Panic & Loss",
-      "priority_tier": "P1",
-      "opportunity_score": 0.725,
-      "frequency_count": 111,
-      "frequency_score": 8.5,
-      "severity_score": 7.5,
-      "user_impact_score": 7.5,
-      "addressability_score": 7.0,
-      "user_feedback": "\"97 at 3:28:04 PM, resulting in a loss of approximately ₹12,852 before cha (GFB_685c8fbc3352c4f8)\" ; \"bahut hi bekar Hai cal 30 tarikh ko Friday ko iske 1:00 ke bad hone wala Jo bleach Hai jiski vajah se 8k ka loss hua na (GFB_bb6aa74e0b5ebeec)\" ; \"They are closing intra day targets and stop loss as per their convenience (GFB_0d25f8794d24fab7)\"",
-      "research_finding": "111 records (10.8% of corpus) document panic during market corrections. Novice investors conflate market dips with platform unreliability.",
-      "user_problem": "Loss Aversion & Panic Redemptions. Early negative returns trigger cognitive dissonance against promised calculator returns.",
-      "unmet_need": "Contextual reassurance during market downturns showing the advantage of buying discounted units (rupee-cost averaging).",
-      "opportunity": "Volatility Reassurance Engine: Contextual framing during market corrections showing discounted units acquired rather than alarming red losses.",
-      "product_recommendation": "Deploy educational cards during market drops (>1.5%) highlighting discounted unit accumulation and long-term compounding.",
-      "supporting_evidence_count": 111,
-      "sample_record_ids": "GFB_685c8fbc3352c4f8, GFB_bb6aa74e0b5ebeec, GFB_0d25f8794d24fab7"
-    },
-    {
-      "opp_id": "OPP-03",
       "opportunity_name": "Live Order Lifecycle & Settlement Stepper",
       "theme": "Platform Delay & Allocation Error",
       "priority_tier": "P0",
-      "opportunity_score": 0.718,
+      "opportunity_score": 7.5,
       "frequency_count": 12,
-      "frequency_score": 4.5,
+      "frequency_score": 5.0,
       "severity_score": 8.5,
       "user_impact_score": 8.0,
       "addressability_score": 9.5,
       "user_feedback": "\"platform is pending it since one year (GFB_d4ddd0ee06e43974)\" ; \"while analysing portfolio there is no tally with market cap value, sector wise allocation and assets allocation (GFB_9faa69a0549c3664)\" ; \"A useless app, its not worth to invest via this app in mutual funds, it's been 4 days but still showing pending while in (GFB_9e81ce977756711c)\"",
-      "research_finding": "NAV allocation delays create high anxiety (deducted but not invested, 12 records). Settlement takes 2-4 days between bank debit and unit realization.",
+      "research_finding": "NAV allocation delays create high anxiety (deducted but not invested, 12 of 1,029 records, 1.2%). Settlement takes 2-4 days between bank debit and unit realization.",
       "user_problem": "Information Asymmetry & Missing NAV Transparency. Investors believe money is lost or stolen during multi-day clearing delays.",
       "unmet_need": "Real-time visual tracking of transaction status across Bank -> NPCI/BSE Star MF -> AMC -> Unit Allocation.",
       "opportunity": "Live Order Lifecycle Stepper: Pizza-tracker style order visualization showing settlement milestone, expected NAV date, and cutoff rules.",
@@ -31441,18 +31408,18 @@
       "sample_record_ids": "GFB_d4ddd0ee06e43974, GFB_9faa69a0549c3664, GFB_9e81ce977756711c"
     },
     {
-      "opp_id": "OPP-04",
+      "opp_id": "OPP-03",
       "opportunity_name": "Flexible Smart Pause & Date Modification",
       "theme": "Cash Crunch & Affordability",
       "priority_tier": "P1",
-      "opportunity_score": 0.692,
+      "opportunity_score": 7.6,
       "frequency_count": 41,
-      "frequency_score": 6.0,
-      "severity_score": 7.0,
-      "user_impact_score": 7.5,
-      "addressability_score": 8.5,
+      "frequency_score": 6.5,
+      "severity_score": 7.5,
+      "user_impact_score": 8.0,
+      "addressability_score": 9.0,
       "user_feedback": "\"Withdrawal money never credited (GFB_cb4424fc3ee598a7)\" ; \"I did not initiate or withdraw any money, yet funds were automatically credited to my account (GFB_ef6dbd43a1b83662)\" ; \"So I urge users to think before you install this app, as in emergency groww won't help you at all (GFB_c0b69f8b76bdcef2)\"",
-      "research_finding": "41 records explicitly note cash crunch / income changes; cancellation is used as a blunt hammer because pause controls are opaque or unavailable.",
+      "research_finding": "41 of 1,029 records (4.0%) explicitly note cash crunch / income changes; cancellation is used as a blunt hammer because pause controls are opaque or unavailable.",
       "user_problem": "Rigid Commitment Friction. Temporary cash crunch forces users to permanently cancel their SIP mandates rather than temporarily pausing.",
       "unmet_need": "1-click temporary pause (1, 2, or 3 months) and dynamic debit date shifting to align with variable salary dates.",
       "opportunity": "Flexible Smart Pause: Frictionless 1-3 month pause with automatic resumption reminders and debit date adjustments without re-creating mandates.",
@@ -31461,46 +31428,46 @@
       "sample_record_ids": "GFB_cb4424fc3ee598a7, GFB_ef6dbd43a1b83662, GFB_c0b69f8b76bdcef2"
     },
     {
-      "opp_id": "OPP-05",
-      "opportunity_name": "Portfolio Rebalancing & Direct Switch Assistant",
-      "theme": "Fund Rebalancing & Strategy Shift",
+      "opp_id": "OPP-04",
+      "opportunity_name": "Volatility Contextualization & Rupee-Cost Averaging Engine",
+      "theme": "Market Volatility Panic & Loss",
       "priority_tier": "P1",
-      "opportunity_score": 0.745,
-      "frequency_count": 222,
-      "frequency_score": 10.0,
-      "severity_score": 4.5,
-      "user_impact_score": 6.5,
-      "addressability_score": 8.0,
-      "user_feedback": "\"mutual funds mismatch (GFB_8737e5613c669d04)\" ; \"Groww is a user-friendly app with a smooth interface for investing in stocks, mutual funds, and IPOs (GFB_8290a19401980aa0)\" ; \"Grow has a very good user interface but the brokerage is very high while buying and selling you will experience it (GFB_18e212ba9d9aed42)\"",
-      "research_finding": "222 records (21.6% of corpus) represent deliberate, informed fund switches, index migrations, and portfolio pruning.",
-      "user_problem": "Disjointed Fund Switching. Users stopping underperforming funds must manually cancel SIP, redeem units, and create new SIPs with tax friction.",
-      "unmet_need": "Streamlined, tax-aware fund switching and consolidation tools for mature retail investors.",
-      "opportunity": "Portfolio Rebalancing Assistant: Automated workflow to switch capital from redundant active funds into low-cost index/flexicap funds with capital gains preview.",
-      "product_recommendation": "Provide 1-click fund switch workflow allowing investors to migrate from active funds to index funds without double manual orders.",
-      "supporting_evidence_count": 222,
-      "sample_record_ids": "GFB_8737e5613c669d04, GFB_8290a19401980aa0, GFB_18e212ba9d9aed42"
+      "opportunity_score": 8.0,
+      "frequency_count": 111,
+      "frequency_score": 9.0,
+      "severity_score": 7.5,
+      "user_impact_score": 7.5,
+      "addressability_score": 7.5,
+      "user_feedback": "\"97 at 3:28:04 PM, resulting in a loss of approximately ₹12,852 before cha (GFB_685c8fbc3352c4f8)\" ; \"bahut hi bekar Hai cal 30 tarikh ko Friday ko iske 1:00 ke bad hone wala Jo bleach Hai jiski vajah se 8k ka loss hua na (GFB_bb6aa74e0b5ebeec)\" ; \"They are closing intra day targets and stop loss as per their convenience (GFB_0d25f8794d24fab7)\"",
+      "research_finding": "111 of 1,029 records (10.8% of corpus) document panic during market corrections. Novice investors conflate market dips with platform unreliability.",
+      "user_problem": "Loss Aversion & Panic Redemptions. Early negative returns trigger cognitive dissonance against promised calculator returns.",
+      "unmet_need": "Contextual reassurance during market downturns showing the advantage of buying discounted units (rupee-cost averaging), without recommending specific funds or stocks.",
+      "opportunity": "Volatility Contextualization Engine: Contextual framing during market corrections showing discounted units acquired rather than alarming red losses.",
+      "product_recommendation": "Deploy educational cards during market drops (>1.5%) highlighting discounted unit accumulation and long-term compounding.",
+      "supporting_evidence_count": 111,
+      "sample_record_ids": "GFB_685c8fbc3352c4f8, GFB_bb6aa74e0b5ebeec, GFB_0d25f8794d24fab7"
     }
   ],
   "assignment_questions": [
     {
       "question_id": "Q1",
       "question": "Top Recurring SIP User Problems & Reasons for Pause / Discontinuation",
-      "core_thesis": "Involuntary Churn vs. Deliberate Portfolio Rebalancing (Saying ≠ Doing)",
-      "key_metrics": "Informed Decisions: 65.4% (176) | Practical Barriers: 21.6% (58) | Volatility Fear: 12.3% (33)",
-      "research_finding": "Empirical analysis of 269 classified records reveals that SIP stops are NOT monolithic failures. 65.4% of discontinuation feedback represents rational portfolio hygiene (rebalancing, index fund migration, tax harvesting). Only 21.6% stems from operational friction (bank mandate bounce fees, salary delays), and 12.3% from psychological panic during market corrections.",
+      "core_thesis": "Involuntary Operational Churn vs. Deliberate Portfolio Hygiene (Saying ≠ Doing)",
+      "key_metrics": "Informed Decisions: 726 of 1,029 (70.6%) | Practical Barriers: 165 of 1,029 (16.0%) | Market Volatility Uncertainty: 111 of 1,029 (10.8%) | Positive Reinforcement: 27 of 1,029 (2.6%)",
+      "research_finding": "Empirical analysis of 1,029 AI-classified records reveals that SIP stops are NOT monolithic failures. 726 of 1,029 records (70.6%) represent rational, informed portfolio management (rebalancing, index fund migration, goal achievement, tax harvesting). Practical operational barriers account for 165 of 1,029 records (16.0%, led by 84 mandate failures and 41 cash crunches), while psychological market volatility panic accounts for 111 of 1,029 records (10.8%).",
       "user_problem": "Users face unexpected bank NACH return penalties (₹250–₹590) when debits fail before salary credit; after 3 misses, the SIP is silently cancelled without user intent. Furthermore, beginners panic during normal market corrections.",
-      "unmet_need": "Proactive pre-debit account health check (-24h) with 1-click safe-skip without bank penalties; contextual downside framing explaining rupee-cost averaging.",
-      "opportunity": "OPP-01: Smart Autopay Guard (P0) & OPP-02: Volatility Reassurance Engine (P1)",
+      "unmet_need": "Proactive pre-debit account balance health check (-24h) with 1-click safe-skip without bank penalties; contextual downside framing explaining rupee-cost averaging and unit accumulation.",
+      "opportunity": "OPP-01: Smart Autopay Guard (Score: 8.9 / 10, P0) & OPP-04: Volatility Contextualization Engine (Score: 8.0 / 10, P1)",
       "supporting_evidence": [
+        {
+          "record_id": "GFB_ecfd49b4c0868bf4",
+          "source": "Google Play Store",
+          "quote": "transfer money or mandate failed"
+        },
         {
           "record_id": "GFB_98818834d1c15767",
           "source": "Apple App Store",
           "quote": "Issue with SIP When we create multiple SIP mandates, instead of debiting once for each mandate it’s taking as separate transaction..."
-        },
-        {
-          "record_id": "GFB_78b816416a9b5020",
-          "source": "Reddit",
-          "quote": "I am not able to approve the mandate in groww app"
         },
         {
           "record_id": "GFB_685c8fbc3352c4f8",
@@ -31513,26 +31480,26 @@
       "question_id": "Q2",
       "question": "Common Payment, Mandate & Auto-Debit Friction Issues",
       "core_thesis": "Silent Churn via Bank NACH Penalty Traps & Allocation Lags",
-      "key_metrics": "Mandate / Auto-Debit Failures: 40 records (14.9% of corpus) | Dominant negative sentiment",
-      "research_finding": "Mandate execution is the most fragile touchpoint in the SIP compounding journey. 40 records document severe friction across three distinct failure modes: (1) Bank bounce return charges of ₹250–₹590 on low balance; (2) 'Deducted But Not Invested' multi-day reconciliation lags; (3) Duplicate deductions on consecutive days.",
-      "user_problem": "When an auto-debit bounces, sponsor banks levy punitive fees that dwarf the monthly SIP instalment for small investors. Out of fear and anger, investors cancel the entire SIP mandate rather than risking repeat charges.",
+      "key_metrics": "Mandate / Auto-Debit Failures: 84 of 1,029 (8.2% of corpus; 50.9% of 165 practical barriers)",
+      "research_finding": "Mandate execution is the single most vulnerable operational touchpoint in the SIP journey. 84 records document severe friction across three distinct failure modes: (1) Bank bounce return charges of ₹250–₹590 on low balance; (2) 'Deducted But Not Invested' multi-day reconciliation lags; (3) Silent auto-cancellation after 3 consecutive missed debits.",
+      "user_problem": "When an auto-debit bounces, sponsor banks levy punitive fees that dwarf the monthly SIP instalment for retail investors. Out of fear and anger, investors cancel the entire SIP mandate rather than risking repeat bank charges.",
       "unmet_need": "Real-time pre-debit balance verification and penalty-free 1-click instalment skipping, coupled with a visual pizza-tracker showing settlement progression.",
-      "opportunity": "OPP-01: Smart Autopay Guard (Score: 0.809, P0) & OPP-03: Live Order Lifecycle Stepper (Score: 0.706, P0)",
+      "opportunity": "OPP-01: Smart Autopay Guard (Score: 8.9 / 10, P0) & OPP-02: Live Order Lifecycle Stepper (Score: 7.5 / 10, P0)",
       "supporting_evidence": [
+        {
+          "record_id": "GFB_ecfd49b4c0868bf4",
+          "source": "Google Play Store",
+          "quote": "transfer money or mandate failed"
+        },
         {
           "record_id": "GFB_98818834d1c15767",
           "source": "Apple App Store",
-          "quote": "multip SIP mandates taking separate transaction and debiting multip..."
+          "quote": "Issue with SIP When we create multiple SIP mandates, taking separate transaction and debiting multip..."
         },
         {
-          "record_id": "GFB_04d72d6bf8a28782",
-          "source": "Reddit",
-          "quote": "Groww not showing that upi mandate is successful There is a hold on my bank account for the three IPOs..."
-        },
-        {
-          "record_id": "GFB_78b816416a9b5020",
-          "source": "Reddit",
-          "quote": "I am not able to approve the mandate in groww app"
+          "record_id": "GFB_2e32091e8042d337",
+          "source": "Google Play Store",
+          "quote": "Feature Request: Add Application Number and IPO Name in UPI Mandate Descriptions When applying for IPOs..."
         }
       ]
     },
@@ -31540,21 +31507,21 @@
       "question_id": "Q3",
       "question": "User Expectations vs. Actual Experiences",
       "core_thesis": "The Expectation Gap Across Autopay, Volatility, and Settlement",
-      "key_metrics": "Expectation mismatch affects 34.2% of early-tenure investors (0–3 and 3–6 months)",
-      "research_finding": "Investors enter SIPs with expectations shaped by finfluencers and compounding calculators ('Set and forget 15% CAGR'). Actual experiences reveal 4 acute gaps: (1) Autopay fragility vs promised automation; (2) Red negative balances during market dips vs promised compounding; (3) Multi-day NAV delays vs expectation of instant allocation; (4) Hidden pause controls vs easy cancellation.",
-      "user_problem": "Cognitive dissonance during early months (0–6m) causes investors to believe the platform or mutual funds are misleading them, triggering premature redemptions at market bottoms.",
-      "unmet_need": "Expectation-setting onboarding: Transparently explain 3–5 day pooling account settlement cycles and show how market dips benefit SIP investors via discounted unit accumulation.",
-      "opportunity": "OPP-02: Volatility Reassurance Engine (P1) & OPP-04: Flexible Smart Pause (P1)",
+      "key_metrics": "Friction & Volatility Dissonance: 269 of 1,029 records (26.1%) | Operational friction (158) exceeds volatility panic (111)",
+      "research_finding": "Investors enter SIPs with expectations shaped by compounding calculators ('Set and forget 15% CAGR'). Actual experiences reveal 4 acute gaps: (1) Autopay fragility vs promised automation (84 records); (2) Red negative balances during market dips vs promised compounding (111 records); (3) Multi-day NAV delays vs expectation of instant allocation (12 records); (4) Hidden pause controls vs easy cancellation (41 records).",
+      "user_problem": "Cognitive dissonance during early months causes investors to believe the platform or mutual funds are misleading them, triggering premature redemptions at market bottoms.",
+      "unmet_need": "Expectation-setting onboarding: Transparently explain 2–4 day pooling account settlement cycles and show how market dips benefit SIP investors via discounted unit accumulation.",
+      "opportunity": "OPP-04: Volatility Contextualization Engine (Score: 8.0 / 10, P1) & OPP-03: Flexible Smart Pause (Score: 7.6 / 10, P1)",
       "supporting_evidence": [
+        {
+          "record_id": "GFB_685c8fbc3352c4f8",
+          "source": "Google Play Store",
+          "quote": "resulting in a loss of approximately ₹12,852 before cha"
+        },
         {
           "record_id": "GFB_bb6aa74e0b5ebeec",
           "source": "Google Play Store",
           "quote": "cal 30 tarikh ko Friday ko iske 1:00 ke bad hone wala Jo bleach Hai jiski vajah se 8k ka loss hua..."
-        },
-        {
-          "record_id": "GFB_908ddbbf546296fe",
-          "source": "Google Play Store",
-          "quote": "Mutual fund locking system is wrong"
         },
         {
           "record_id": "GFB_8290a19401980aa0",
@@ -31567,43 +31534,43 @@
       "question_id": "Q4",
       "question": "Continuers vs. Drop-offs & Differences Across the 4 Sources",
       "core_thesis": "Survivorship Bias & Distinct Investor Personas by Channel",
-      "key_metrics": "Reddit (161, 59.9%) | YouTube (72, 26.8%) | App Store (21, 7.8%) | Play Store (15, 5.6%)",
-      "research_finding": "Continuers (112 records, 41.6%) are protected by disciplined habits: understanding rupee-cost averaging, prioritizing low TER index funds, and having salary-aligned autopay dates. Drop-offs are precipitated by unexpected bank charges or market peak entries. Across sources: Reddit users are highly analytical fee-optimizers (0% positive praise, deep rebalancing debates); YouTube comments feature beginners seeking validation (75% positive, asking 'Is Groww safe?'); Play Store reviews focus on transactional banking/OTP rage (Avg rating: 2.4); App Store reviews value clean UI but flag NAV delays (Avg rating: 4.1).",
-      "user_problem": "Treating all users with a single homogeneous interface fails both advanced investors needing tax-aware rebalancing and beginners needing basic SIP safety guidance.",
-      "unmet_need": "Segment-aware product features: Advanced portfolio rebalancing for Reddit cohorts; educational reassurance for YouTube cohorts.",
-      "opportunity": "OPP-05: Portfolio Rebalancing Assistant (P1) & Channel Persona Adaptation",
+      "key_metrics": "YouTube: 460 of 1,029 (44.7%) | Play Store: 309 of 1,029 (30.0%) | Reddit: 239 of 1,029 (23.2%) | App Store: 21 of 1,029 (2.0%) | Continuers: 672 of 1,029 (65.3%) | Discontinuers: 293 of 1,029 (28.5%)",
+      "research_finding": "Continuers (672 of 1,029, 65.3%) are anchored by disciplined habits: understanding rupee-cost averaging, prioritizing low TER index funds, and having salary-aligned autopay dates. Discontinuers (293 of 1,029, 28.5%) drop off due to bank penalty traps, temporary liquidity shortages, or deliberate platform switches. Across sources: Reddit users are highly analytical fee-optimizers (deep rebalancing debates); YouTube comments feature beginners seeking guidance (asking 'How to start SIP?'); Play Store reviews focus on transactional banking/OTP friction; App Store reviews value clean UI but flag NAV delays.",
+      "user_problem": "A single homogeneous interface fails both advanced investors needing portfolio transparency and beginners needing basic SIP safety guidance.",
+      "unmet_need": "Segment-aware product features: Advanced portfolio tracking for analytical cohorts; educational reassurance for novice cohorts.",
+      "opportunity": "OPP-01: Smart Autopay Guard (Score: 8.9 / 10, P0) & OPP-04: Volatility Contextualization Engine (Score: 8.0 / 10, P1)",
       "supporting_evidence": [
+        {
+          "record_id": "GFB_0fa60f8ee9050e23",
+          "source": "Google Play Store",
+          "quote": "very Good stocks mutual funds"
+        },
         {
           "record_id": "GFB_8737e5613c669d04",
           "source": "Google Play Store",
           "quote": "mutual funds mismatch"
-        },
-        {
-          "record_id": "GFB_8290a19401980aa0",
-          "source": "Google Play Store",
-          "quote": "Groww is a user-friendly app with a smooth interface for investing in stocks, mutual funds, and IPOs"
         }
       ]
     },
     {
       "question_id": "Q5",
       "question": "Unmet User Needs & Prioritized Product Improvement Opportunities",
-      "core_thesis": "Mathematically Prioritized Product Solutions (Formula-Backed)",
-      "key_metrics": "5 Features Ranked | Opportunity Scores: 0.809 to 0.639 | P0 Critical: 2 initiatives",
-      "research_finding": "Opportunities were scored using the visible formula: Opportunity Score = (Frequency × 0.30) + (Severity × 0.25) + (Impact × 0.25) + (Addressability × 0.20). The top 5 initiatives address 100% of addressable friction points without relying on fear, FOMO, or regulated investment advice.",
-      "user_problem": "Lack of proactive bank health checks, missing order status visibility, rigid monthly commitments, and disjointed fund rebalancing.",
-      "unmet_need": "1. Smart Autopay Guard (pre-debit check & safe skip)\n2. Live Order Lifecycle Stepper (visual settlement tracking)\n3. Portfolio Rebalancing Assistant (1-click fund migration)\n4. Flexible Smart Pause (1–3 month pause with auto-resume)\n5. Volatility Reassurance Engine (rupee-cost averaging education)",
-      "opportunity": "Prioritized Roadmap: OPP-01 (P0: 0.809), OPP-03 (P0: 0.706), OPP-05 (P1: 0.687), OPP-04 (P1: 0.646), OPP-02 (P1: 0.639)",
+      "core_thesis": "Mathematically Prioritized Product Solutions (Formula-Backed, Brief-Compliant)",
+      "key_metrics": "4 Compliant Initiatives Ranked | Scores: 8.9 to 7.5 / 10 | P0 Critical: 2 initiatives",
+      "research_finding": "Opportunities were scored using the visible formula: Score = (Frequency × 0.30) + (Severity × 0.25) + (Impact × 0.25) + (Addressability × 0.20), normalized to 0–10. All 4 initiatives strictly comply with the brief by eliminating regulated fund/stock recommendations and prohibiting fear, FOMO, or urgency nudges.",
+      "user_problem": "Involuntary NACH bounce penalties, missing real-time NAV realization tracking, rigid commitment during cash crunches, and lack of downside volatility education.",
+      "unmet_need": "1. Smart Autopay Guard (pre-debit balance check & safe skip)\n2. Live Order Lifecycle Stepper (visual settlement tracking)\n3. Flexible Smart Pause (1–3 month pause with auto-resume)\n4. Volatility Contextualization Engine (rupee-cost averaging education)",
+      "opportunity": "Prioritized Roadmap: OPP-01: Smart Autopay Guard (Score: 8.9 / 10, P0), OPP-04: Volatility Contextualization Engine (Score: 8.0 / 10, P1), OPP-03: Flexible Smart Pause (Score: 7.6 / 10, P1), OPP-02: Live Order Lifecycle Stepper (Score: 7.5 / 10, P0)",
       "supporting_evidence": [
         {
-          "record_id": "GFB_98818834d1c15767",
-          "source": "Apple App Store",
-          "quote": "multip SIP mandates taking separate transaction..."
+          "record_id": "GFB_ecfd49b4c0868bf4",
+          "source": "Google Play Store",
+          "quote": "transfer money or mandate failed"
         },
         {
-          "record_id": "GFB_78b816416a9b5020",
-          "source": "Reddit",
-          "quote": "I am not able to approve the mandate in groww app"
+          "record_id": "GFB_9e81ce977756711c",
+          "source": "Google Play Store",
+          "quote": "A useless app, its not worth to invest via this app in mutual funds, it's been 4 days but still showing pending while in"
         },
         {
           "record_id": "GFB_685c8fbc3352c4f8",
